@@ -1,0 +1,811 @@
+/* =========================================================
+   style_auto_report.css
+   Style dac thu cua trang Auto Report.
+   Load sau common.css.
+========================================================= */
+
+/* =========================================================
+   HEADER OVERRIDES  (same as practice_b1)
+========================================================= */
+
+.top-header {
+  padding: 0 32px;
+  backdrop-filter: blur(10px);
+  z-index: 50;
+}
+
+.brand-logo   { width: 48px; border-radius: 10px; letter-spacing: 0.02em; }
+.brand-text   { line-height: 1.2; }
+.brand-text strong { font-weight: 800; }
+
+.header-search input {
+  width: min(420px, 100%);
+  height: 38px;
+  color: var(--text);
+}
+
+.header-search input::placeholder { color: #8A9AB2; }
+
+.header-actions button {
+  border-radius: 8px;
+  padding: 0 14px;
+  font-weight: 600;
+}
+
+.header-actions .sign-in-btn {
+  background: var(--primary);
+  color: #FFFFFF;
+  border-color: var(--primary);
+  padding: 0 18px;
+  font-weight: 800;
+}
+
+.header-actions-right {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+/* =========================================================
+   NAV OVERRIDES  (same as practice_b1)
+========================================================= */
+
+.main-nav {
+  padding-left: 72px;
+  color: #FFFFFF;
+  z-index: 45;
+}
+
+.nav-item {
+  padding: 0 22px;
+  align-items: center;
+  cursor: pointer;
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  user-select: none;
+}
+
+.nav-item:hover,
+.nav-item.active { background: rgba(255,255,255,0.14); }
+
+.nav-arrow { margin-left: 6px; font-size: 12px; }
+
+.nav-dropdown {
+  width: 280px;
+  min-width: unset;
+  max-width: unset;
+  border-radius: 0 0 14px 14px;
+  color: var(--text);
+}
+
+.nav-item:hover .nav-dropdown,
+.nav-dropdown.open { display: block; }
+
+.dropdown-item {
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 13px 16px;
+}
+
+.dropdown-item:hover,
+.dropdown-item.active { color: var(--primary); font-weight: 800; }
+
+.dropdown-item small { margin-top: 3px; font-size: 12px; font-weight: 400; }
+
+/* =========================================================
+   LAYOUT OVERRIDES  (same as practice_b1)
+========================================================= */
+
+.app-layout { min-height: 0; }
+
+.left-sidebar {
+  height: calc(100vh - var(--fixed-header-height));
+  min-height: 0;
+  overflow-x: hidden;
+  padding: 18px 0;
+}
+
+.sidebar-title        { font-size: 22px; padding: 0 18px 14px; font-weight: 800; }
+.sidebar-section-label { padding: 10px 18px 6px; font-weight: 800; letter-spacing: 0.06em; }
+.sidebar-link         { padding: 9px 18px; text-decoration: none; cursor: pointer; }
+
+.content {
+  min-width: 0;
+  min-height: 0;
+  height: calc(100vh - var(--fixed-header-height));
+  background: transparent;
+}
+
+.content-inner {
+  width: min(100%, 1320px);
+  max-width: 1320px;
+}
+
+.lesson-header-inner  { padding-top: 16px; padding-bottom: 16px; }
+.lesson-top           { gap: 24px; }
+.lesson-label         { font-weight: 800; margin-bottom: 6px; }
+
+h1 {
+  margin: 0;
+  color: var(--primary);
+  font-size: clamp(30px, 2.4vw, 42px);
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.bookmark-btn { width: 40px; height: 40px; margin-top: 4px; font-size: 32px; line-height: 1; }
+
+.lesson-nav { align-items: center; padding-top: 8px; }
+
+.lesson-nav button {
+  min-width: 112px;
+  height: 38px;
+  padding: 0 16px;
+  box-shadow: 0 4px 14px rgba(0,36,107,0.06);
+  transition: background .15s, color .15s, border-color .15s, transform .15s, box-shadow .15s;
+}
+
+.lesson-nav button:hover:not(:disabled) {
+  border-color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(0,36,107,0.16);
+}
+
+.lesson-nav button:disabled {
+  background: #F2F6FF;
+  color: #9AAAC4;
+  border-color: #E0E8F6;
+  box-shadow: none;
+}
+
+.content-body { min-height: 0; overflow-x: hidden; }
+
+.lesson-block {
+  background: #FFFFFF;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 28px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+
+.lesson-block:last-child { margin-bottom: 0; }
+
+.lesson-block h2 {
+  color: var(--primary);
+  font-size: 28px;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.lesson-block h3 {
+  margin: 22px 0 10px;
+  color: var(--primary);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.right-sidebar {
+  height: calc(100vh - var(--fixed-header-height));
+  min-height: 0;
+  overflow-x: hidden;
+}
+
+.info-card { border-radius: 12px; }
+
+.info-card h3 {
+  margin-top: 0;
+  color: var(--primary);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.info-card p,
+.info-card li { color: var(--muted); font-size: 14px; }
+
+/* =========================================================
+   DOWNLOAD LIST
+========================================================= */
+
+.download-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.download-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 9px 12px;
+  background: #F4F8FF;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+  text-decoration: none;
+
+  transition: background .15s, border-color .15s, transform .15s;
+}
+
+.download-btn:hover {
+  background: var(--primary);
+  color: #FFFFFF;
+  border-color: var(--primary);
+  transform: translateX(2px);
+}
+
+.dl-icon {
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.left-sidebar::-webkit-scrollbar,
+.right-sidebar::-webkit-scrollbar { width: 6px; }
+
+.content-body::-webkit-scrollbar { width: 8px; }
+
+.left-sidebar::-webkit-scrollbar-track,
+.right-sidebar::-webkit-scrollbar-track,
+.content-body::-webkit-scrollbar-track { background: transparent; }
+
+/* =========================================================
+   HERO BANNER
+   Dung cho lesson block dang hero (phan gioi thieu dau trang)
+========================================================= */
+
+.ar-hero {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  border-radius: 18px;
+  padding: 28px 32px;
+  color: #FFFFFF;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.ar-hero::after {
+  content: "";
+  position: absolute;
+  right: -60px;
+  top: -70px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: rgba(202, 220, 252, 0.15);
+  pointer-events: none;
+}
+
+.ar-hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.13);
+  border: 1px solid rgba(255,255,255,0.2);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin-bottom: 12px;
+}
+
+.ar-hero h2 {
+  color: #FFFFFF !important;
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0 0 10px;
+  padding-left: 0 !important;
+}
+
+.ar-hero h2::before { display: none !important; }
+
+.ar-hero p {
+  color: rgba(255,255,255,0.88);
+  font-size: 15px;
+  margin: 0 0 18px;
+  max-width: 780px;
+}
+
+.ar-hero-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ar-hero-pill {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.13);
+  border: 1px solid rgba(255,255,255,0.2);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   CARD GRID
+   Grid 2 cot hoac 3 cot cho cac card noi dung
+========================================================= */
+
+.ar-grid {
+  display: grid;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.ar-grid-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+.ar-grid-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+.ar-grid-4 { grid-template-columns: repeat(4, minmax(0,1fr)); }
+
+.ar-card {
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px;
+  transition: box-shadow .18s, transform .18s, border-color .18s;
+}
+
+.ar-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-dark);
+  box-shadow: 0 12px 28px rgba(0,36,107,0.1);
+}
+
+.ar-card h3 {
+  margin: 0 0 10px;
+  color: var(--primary);
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.ar-card p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.ar-card ul {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.ar-card li { margin: 5px 0; }
+
+/* highlight variant */
+.ar-card--highlight {
+  background: #FFF8EB;
+  border-left: 5px solid var(--warning);
+}
+
+/* =========================================================
+   FLOW DIAGRAM
+   Chuoi buoc quy trinh theo kieu flow ngang
+========================================================= */
+
+.ar-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 20px;
+  background: var(--surface-soft);
+  border: 1px dashed var(--accent-dark);
+  border-radius: 16px;
+  margin: 16px 0;
+}
+
+.ar-flow-node {
+  min-width: 130px;
+  text-align: center;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: #FFFFFF;
+  border: 1px solid var(--line);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+  box-shadow: 0 4px 12px rgba(0,36,107,0.06);
+  transition: border-color .15s, box-shadow .15s;
+}
+
+.ar-flow-node:hover {
+  border-color: var(--primary);
+  box-shadow: 0 6px 18px rgba(0,36,107,0.13);
+}
+
+.ar-flow-arrow {
+  color: var(--primary);
+  font-size: 20px;
+  font-weight: 700;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   CODE BLOCK
+   Dark background, hien thi Python / command / folder tree
+========================================================= */
+
+.ar-code {
+  background: var(--code-bg);
+  color: var(--code-text);
+  border-radius: 16px;
+  padding: 18px 20px;
+  font-family: Consolas, Monaco, "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre;
+  overflow-x: auto;
+  border: 1px solid rgba(255,255,255,0.06);
+  margin: 14px 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* token colors */
+.ar-code .tok-param  { color: #7ee787; font-weight: 700; }
+.ar-code .tok-cmd    { color: #ffd166; }
+.ar-code .tok-comment { color: #8b949e; font-style: italic; }
+.ar-code .tok-string { color: #a5d6ff; }
+.ar-code .tok-kw     { color: #ff7b72; }
+
+/* =========================================================
+   TIMELINE
+   4 buoc / giai doan trong ke hoach trien khai
+========================================================= */
+
+.ar-timeline {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: 14px;
+  margin: 16px 0;
+}
+
+.ar-phase {
+  background: #FFFFFF;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px 18px 18px;
+  position: relative;
+  box-shadow: var(--shadow);
+  transition: transform .18s, box-shadow .18s;
+}
+
+.ar-phase:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 32px rgba(0,36,107,0.12);
+}
+
+.ar-phase-badge {
+  position: absolute;
+  top: -11px;
+  left: 16px;
+  background: var(--primary);
+  color: #FFFFFF;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.ar-phase h3 {
+  margin: 8px 0 10px;
+  color: var(--primary);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.ar-phase ul {
+  margin: 0;
+  padding-left: 16px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.ar-phase li { margin: 5px 0; }
+
+/* =========================================================
+   CONCLUSION CARD
+   Card ket luan voi badge lon
+========================================================= */
+
+.ar-conclusion {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 24px;
+  align-items: center;
+  background: #FFF8EB;
+  border-left: 5px solid var(--warning);
+  border-radius: 16px;
+  padding: 24px;
+  margin: 16px 0;
+}
+
+.ar-conclusion-badge {
+  width: 120px;
+  height: 120px;
+  border-radius: 22px;
+  background: var(--primary);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font-weight: 700;
+  box-shadow: 0 12px 26px rgba(0,36,107,0.22);
+  flex-shrink: 0;
+}
+
+.ar-conclusion-badge .badge-main { font-size: 30px; line-height: 1; }
+.ar-conclusion-badge .badge-sub  { font-size: 12px; opacity: 0.85; margin-top: 6px; }
+
+.ar-conclusion-body h3 {
+  margin: 0 0 10px;
+  color: var(--primary);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.ar-conclusion-body p {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.ar-conclusion-body ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.ar-conclusion-body li { margin: 5px 0; }
+
+/* =========================================================
+   MOCK DASHBOARD
+   Minh hoa dashboard HTML template voi KPI va bar chart
+========================================================= */
+
+.ar-dashboard {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 14px;
+  margin: 16px 0;
+}
+
+.ar-kpi {
+  background: #FFFFFF;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+
+.ar-kpi-label {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.ar-kpi-value {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--primary);
+  font-family: Consolas, monospace;
+}
+
+.ar-chart {
+  grid-column: span 2;
+  background: linear-gradient(135deg, #FFFFFF, var(--surface-soft));
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px;
+  min-height: 180px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ar-chart h4 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.ar-bar-wrap {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  height: 100px;
+}
+
+.ar-bar {
+  flex: 1;
+  background: linear-gradient(180deg, var(--accent-dark), var(--primary));
+  border-radius: 6px 6px 0 0;
+  opacity: 0.85;
+  transition: opacity .15s;
+}
+
+.ar-bar:hover { opacity: 1; }
+
+/* =========================================================
+   TAG BADGES  (dung trong table)
+========================================================= */
+
+.ar-tag {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+
+.ar-tag--blue  { background: #EAF1FF; color: #175CD3; }
+.ar-tag--ok    { background: #EAF7EF; color: #157347; }
+.ar-tag--warn  { background: #FFF4E5; color: #B54708; }
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@supports (height: 100dvh) {
+  .left-sidebar, .content, .right-sidebar {
+    height: calc(100dvh - var(--fixed-header-height));
+  }
+}
+
+@media (min-width: 1600px) {
+  .content-inner { max-width: 1440px; }
+}
+
+@media (max-width: 1180px) {
+  .content-inner {
+    max-width: none;
+    width: 100%;
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+
+@media (max-width: 900px) {
+  .top-header {
+    height: auto;
+    min-height: 58px;
+    gap: 12px;
+    padding: 10px 14px;
+  }
+
+  .brand { min-width: 0; flex: 1; }
+  .brand-logo { width: 42px; height: 34px; font-size: 14px; }
+  .brand-text strong { font-size: 14px; white-space: nowrap; }
+  .brand-text span   { font-size: 12px; }
+
+  .header-search { order: 3; flex-basis: 100%; width: 100%; }
+  .header-search input { width: 100%; height: 42px; font-size: 16px; }
+  .header-actions { display: none; }
+
+  .main-nav {
+    padding-left: 0;
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+  }
+  .main-nav::-webkit-scrollbar { display: none; }
+
+  .nav-item { flex: 0 0 auto; padding: 0; }
+  .nav-link { min-height: 44px; padding: 0 16px; white-space: nowrap; }
+
+  .nav-dropdown {
+    position: fixed;
+    top: 104px;
+    left: 12px; right: 12px;
+    width: auto; min-width: auto; max-width: none;
+    border-radius: 16px;
+    z-index: 200;
+  }
+
+  .app-layout { display: block; height: auto; overflow: visible; }
+
+  .left-sidebar {
+    height: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 10px 12px;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+    -webkit-overflow-scrolling: touch;
+  }
+  .left-sidebar::-webkit-scrollbar { display: none; }
+  .sidebar-title { display: none; }
+
+  .sidebar-list { display: flex; gap: 8px; min-width: max-content; }
+
+  .sidebar-section-label {
+    min-height: 40px; margin: 0; padding: 9px 14px;
+    border-radius: 999px; background: #FFFFFF; white-space: nowrap;
+  }
+  .sidebar-section-label::after { display: none; }
+
+  .sidebar-link {
+    min-height: 40px; padding: 9px 14px;
+    border-left: none; border-radius: 999px;
+    background: #FFFFFF; white-space: nowrap; font-size: 14px;
+  }
+  .sidebar-link.active { background: var(--primary); color: #FFFFFF; }
+
+  .content { height: auto; min-height: auto; display: block; overflow: visible; }
+  .content-inner { width: 100%; max-width: none; padding-left: 16px; padding-right: 16px; }
+
+  .lesson-header-wrapper {
+    position: relative;
+    background: rgba(246,249,255,0.96);
+    backdrop-filter: blur(10px);
+  }
+  .lesson-header-inner { padding-top: 18px; padding-bottom: 18px; }
+  .lesson-top { gap: 14px; }
+
+  h1 { font-size: 26px; }
+  .bookmark-btn { width: 38px; height: 38px; margin-top: 8px; font-size: 24px; }
+
+  .lesson-nav { gap: 10px; padding-top: 14px; }
+  .lesson-nav button { flex: 1; min-width: 0; height: 42px; padding: 0 12px; font-size: 13px; }
+
+  .content-body { overflow: visible; padding-top: 18px; padding-bottom: 56px; }
+
+  .lesson-block { padding: 20px; border-radius: 16px; margin-bottom: 18px; }
+  .lesson-block h2 { font-size: 22px; }
+  .lesson-block h3 { font-size: 19px; }
+
+  /* grid collapse */
+  .ar-grid-2,
+  .ar-grid-3,
+  .ar-grid-4 { grid-template-columns: 1fr; }
+
+  .ar-timeline { grid-template-columns: 1fr 1fr; }
+
+  .ar-conclusion { grid-template-columns: 1fr; }
+  .ar-conclusion-badge { width: 100%; height: auto; padding: 18px; flex-direction: row; gap: 12px; }
+
+  .ar-dashboard { grid-template-columns: 1fr; }
+  .ar-chart { grid-column: span 1; }
+
+  .ar-flow { flex-direction: column; }
+  .ar-flow-arrow { transform: rotate(90deg); }
+
+  .ar-hero { padding: 22px 20px; }
+  .ar-hero h2 { font-size: 22px; }
+}
+
+@media (max-width: 600px) {
+  .brand-text span { display: none; }
+  .top-header { padding: 9px 12px; }
+  .content-inner { padding-left: 14px; padding-right: 14px; }
+
+  h1 { font-size: 24px; }
+
+  .lesson-block { padding: 18px 16px; }
+  .lesson-block h2 { font-size: 21px; }
+
+  .lesson-nav { flex-direction: column; }
+  .lesson-nav button { width: 100%; }
+
+  .ar-timeline { grid-template-columns: 1fr; }
+}

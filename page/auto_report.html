@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auto Report — Data Learning</title>
+
+  <link rel="stylesheet" href="../style/common.css" />
+  <link rel="stylesheet" href="../style/style_auto_report.css" />
+</head>
+
+<body data-active-module="auto-report">
+  <div id="commonHeader"></div>
+
+  <div class="app-layout">
+    <aside class="left-sidebar">
+      <div class="sidebar-title" id="sidebarTitle">
+        Auto Report
+      </div>
+      <div class="sidebar-list" id="sidebarList">
+        <!-- Render by JS -->
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="lesson-header-wrapper">
+        <div class="content-inner lesson-header-inner">
+
+          <div class="lesson-top">
+            <div>
+              <div class="lesson-label" id="lessonLabel">
+                Auto Report · Python + GPT + HTML
+              </div>
+              <h1 id="lessonTitle">
+                Tự động hóa báo cáo
+              </h1>
+            </div>
+            <div class="header-actions-right">
+              <button class="bookmark-btn" type="button" title="Bookmark">❖</button>
+            </div>
+          </div>
+
+          <div class="lesson-nav">
+            <button type="button" id="prevBtn">← Previous</button>
+            <button type="button" id="nextBtn">Next →</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-body">
+        <div class="content-inner">
+          <article id="lessonContent">
+            <!-- Render by JS -->
+          </article>
+        </div>
+      </div>
+    </main>
+
+    <aside class="right-sidebar">
+      <div class="info-card">
+        <h3>Module Focus</h3>
+        <p>
+          Xây dựng pipeline tự động hóa báo cáo: từ Excel/CSV qua GPT phân tích,
+          HTML template có tham số, đến Python render và Task Scheduler.
+        </p>
+      </div>
+
+      <div class="info-card">
+        <h3>Download</h3>
+        <div class="download-list">
+          <a class="download-btn" href="../scr/auto_report_project/main.py" download>
+            <span class="dl-icon">⬇</span>
+            <span>main.py</span>
+          </a>
+          <a class="download-btn" href="../scr/auto_report_project/config/config.json" download>
+            <span class="dl-icon">⬇</span>
+            <span>config.json</span>
+          </a>
+          <a class="download-btn" href="../scr/auto_report_project/input/data.xlsx" download>
+            <span class="dl-icon">⬇</span>
+            <span>data.xlsx</span>
+          </a>
+          <a class="download-btn" href="../scr/auto_report_project/template/dashboard_template.html" download>
+            <span class="dl-icon">⬇</span>
+            <span>dashboard_template.html</span>
+          </a>
+          <a class="download-btn" href="../scr/auto_report_project/output/dashboard_report.html" download>
+            <span class="dl-icon">⬇</span>
+            <span>dashboard_report.html</span>
+          </a>
+          <a class="download-btn" href="../scr/auto_report_project/logs/run_YYYYMMDD.log" download>
+            <span class="dl-icon">⬇</span>
+            <span>run_YYYYMMDD.log</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h3>Tech Stack</h3>
+        <ul>
+          <li>Python · pandas</li>
+          <li>HTML template (placeholder)</li>
+          <li>GPT hỗ trợ thiết kế</li>
+          <li>PyInstaller · .exe</li>
+          <li>Windows Task Scheduler</li>
+        </ul>
+      </div>
+
+      <div class="info-card">
+        <h3>Learning Path</h3>
+        <ul>
+          <li>Mục tiêu & bối cảnh</li>
+          <li>Quy trình tổng thể</li>
+          <li>Tham số hóa HTML</li>
+          <li>Python render tự động</li>
+          <li>Đóng gói & vận hành</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+
+  <script src="../js/common_loader.js"></script>
+  <script src="../js/page/auto_report.js"></script>
+</body>
+</html>

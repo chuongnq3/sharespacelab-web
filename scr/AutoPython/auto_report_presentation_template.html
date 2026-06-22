@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tự động hóa báo cáo bằng Python, GPT và HTML</title>
+  <style>
+    :root {
+      --primary: #582C83;
+      --accent: #F99D1C;
+      --bg: #F7F4FB;
+      --card: #FFFFFF;
+      --text: #1F2933;
+      --muted: #667085;
+      --line: #E5DDF0;
+      --ok: #157347;
+      --warn: #B54708;
+      --risk: #B42318;
+      --blue: #175CD3;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, #F8F4FC 0%, #FFFFFF 45%);
+      line-height: 1.6;
+    }
+
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 20px 56px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, var(--primary), #7A45A5);
+      color: #fff;
+      border-radius: 22px;
+      padding: 34px 36px;
+      box-shadow: 0 18px 38px rgba(88, 44, 131, 0.22);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -80px;
+      top: -90px;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: rgba(249, 157, 28, 0.26);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.14);
+      font-size: 13px;
+      letter-spacing: 0.02em;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 34px;
+      line-height: 1.18;
+      max-width: 860px;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 880px;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 16px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .pill {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.13);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 13px;
+    }
+
+    .section { margin-top: 26px; }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 14px;
+      font-size: 22px;
+      color: var(--primary);
+    }
+
+    .section-title::before {
+      content: "";
+      display: inline-block;
+      width: 8px;
+      height: 24px;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    .grid { display: grid; gap: 16px; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(16, 24, 40, 0.06);
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+      color: #3D1F5A;
+      font-size: 18px;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    ul { margin: 10px 0 0; padding-left: 20px; }
+    li { margin: 6px 0; }
+
+    .highlight {
+      border-left: 5px solid var(--accent);
+      background: #FFF8ED;
+    }
+
+    .decision {
+      display: grid;
+      grid-template-columns: 170px 1fr;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .badge-large {
+      width: 132px;
+      height: 132px;
+      border-radius: 28px;
+      background: var(--primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      font-weight: 700;
+      box-shadow: 0 12px 26px rgba(88, 44, 131, 0.22);
+    }
+
+    .badge-large span:first-child { font-size: 34px; line-height: 1; }
+    .badge-large span:last-child { font-size: 13px; opacity: 0.86; margin-top: 8px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+
+    th, td {
+      text-align: left;
+      vertical-align: top;
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+    }
+
+    th {
+      background: #F0E8F7;
+      color: #3D1F5A;
+      font-weight: 700;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .tag-ok { background: #EAF7EF; color: var(--ok); }
+    .tag-warn { background: #FFF4E5; color: var(--warn); }
+    .tag-risk { background: #FEECEB; color: var(--risk); }
+    .tag-blue { background: #EAF1FF; color: var(--blue); }
+
+    .flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 18px;
+      background: #FBFAFD;
+      border: 1px dashed #C9B8DA;
+      border-radius: 16px;
+    }
+
+    .node {
+      min-width: 142px;
+      text-align: center;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid var(--line);
+      font-weight: 700;
+      color: #3D1F5A;
+      box-shadow: 0 4px 12px rgba(16, 24, 40, 0.05);
+    }
+
+    .arrow { color: var(--accent); font-size: 24px; font-weight: 700; }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .week { position: relative; padding-top: 18px; }
+
+    .week-number {
+      position: absolute;
+      top: -10px;
+      left: 18px;
+      background: var(--accent);
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .note {
+      background: #F9FAFB;
+      border: 1px solid #EAECF0;
+      color: #475467;
+      padding: 14px 16px;
+      border-radius: 14px;
+      font-size: 14px;
+    }
+
+    .code {
+      background: #1f1930;
+      color: #F4F1FF;
+      border-radius: 16px;
+      padding: 18px;
+      font-family: Consolas, Monaco, monospace;
+      font-size: 13px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      overflow: auto;
+      border: 1px solid #3a2a55;
+    }
+
+    .param { color: #7ee787; font-weight: 700; }
+    .cmd { color: #ffd166; }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .kpi {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+      padding: 16px;
+    }
+
+    .kpi .label { color: var(--muted); font-size: 13px; }
+    .kpi .value { color: var(--primary); font-size: 28px; font-weight: 800; margin-top: 4px; }
+
+    .chart {
+      grid-column: span 2;
+      min-height: 210px;
+      background:
+        linear-gradient(to top, rgba(88,44,131,.10) 0 1px, transparent 1px 42px),
+        linear-gradient(135deg, #fff, #faf5ff);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bar-wrap {
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      bottom: 24px;
+      display: flex;
+      align-items: end;
+      gap: 16px;
+      height: 130px;
+    }
+
+    .bar {
+      flex: 1;
+      background: linear-gradient(180deg, var(--accent), var(--primary));
+      border-radius: 8px 8px 0 0;
+      opacity: .9;
+    }
+
+    .footer {
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .grid-2, .grid-3, .grid-4, .timeline, .dashboard { grid-template-columns: 1fr; }
+      .decision { grid-template-columns: 1fr; }
+      .badge-large { width: 100%; height: auto; padding: 22px; }
+      h1 { font-size: 28px; }
+      .hero { padding: 28px 22px; }
+      .flow { flex-direction: column; }
+      .arrow { transform: rotate(90deg); }
+      .chart { grid-column: span 1; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="eyebrow">Automation Reporting · Python + GPT + HTML</div>
+      <h1>Tự động hóa báo cáo từ Excel/CSV bằng GPT, Python và HTML</h1>
+      <p>
+        Mục tiêu là xây dựng một quy trình giúp người dùng gửi file dữ liệu bất kỳ cho GPT phân tích,
+        chốt dashboard trực quan, chuyển thành HTML template có tham số, sau đó dùng Python cập nhật số liệu tự động
+        và đặt lịch chạy định kỳ bằng Windows Task Scheduler.
+      </p>
+      <div class="meta">
+        <div class="pill">Nguồn dữ liệu: Excel / CSV</div>
+        <div class="pill">Thiết kế: GPT hỗ trợ phân tích & dashboard</div>
+        <div class="pill">Tự động hóa: Python render HTML</div>
+        <div class="pill">Vận hành: PyInstaller + Task Scheduler</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">1. Mục tiêu chính</h2>
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>Chuẩn hóa báo cáo</h3>
+          <p>Biến dữ liệu Excel/CSV thành một báo cáo HTML có bố cục cố định, dễ đọc, dễ chia sẻ và không phụ thuộc thao tác copy thủ công.</p>
+        </div>
+        <div class="card">
+          <h3>Giảm sai sót số liệu</h3>
+          <p>Số liệu được tính trực tiếp từ file đầu vào bằng Python, hạn chế lỗi nhập tay, sai kỳ dữ liệu hoặc quên cập nhật chỉ tiêu.</p>
+        </div>
+        <div class="card">
+          <h3>Tự động chạy định kỳ</h3>
+          <p>Đóng gói thành file chạy độc lập và đặt lịch bằng Task Scheduler để báo cáo tự cập nhật theo ngày, tuần hoặc tháng.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">2. Bối cảnh và vấn đề hiện tại</h2>
+      <div class="grid grid-2">
+        <div class="card">
+          <h3>Cách làm thủ công</h3>
+          <ul>
+            <li>Người dùng lấy dữ liệu từ Excel/CSV.</li>
+            <li>Tự tính KPI, vẽ biểu đồ, viết nhận định.</li>
+            <li>Copy số liệu sang PowerPoint, Word, email hoặc HTML.</li>
+            <li>Mỗi lần dữ liệu thay đổi phải làm lại nhiều bước.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Cách làm đề xuất</h3>
+          <ul>
+            <li>GPT hỗ trợ đọc hiểu dữ liệu và đề xuất dashboard.</li>
+            <li>HTML chỉ đóng vai trò template trình bày.</li>
+            <li>Python đọc dữ liệu mới và thay vào các tham số.</li>
+            <li>Task Scheduler tự chạy script theo lịch cố định.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">3. Quy trình tổng thể</h2>
+      <div class="card">
+        <p style="margin-bottom: 16px; color: var(--muted);">
+          Quy trình nên đi từ hiểu dữ liệu → chốt thiết kế → tham số hóa template → tự động hóa bằng code.
+        </p>
+        <div class="flow">
+          <div class="node">Excel / CSV</div>
+          <div class="arrow">→</div>
+          <div class="node">GPT phân tích</div>
+          <div class="arrow">→</div>
+          <div class="node">Dashboard mockup</div>
+          <div class="arrow">→</div>
+          <div class="node">HTML template</div>
+          <div class="arrow">→</div>
+          <div class="node">Python render</div>
+          <div class="arrow">→</div>
+          <div class="node">Auto report</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">4. Các bước triển khai chi tiết</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Bước</th>
+            <th>Nội dung thực hiện</th>
+            <th>Đầu ra mong muốn</th>
+            <th>Lưu ý</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Bước 1</strong><br/>Gửi dữ liệu</td>
+            <td>Người dùng gửi file Excel/CSV bất kỳ cho GPT để đọc hiểu cấu trúc dữ liệu.</td>
+            <td><span class="tag tag-blue">Data Understanding</span><br/>Danh sách cột, kiểu dữ liệu, KPI tiềm năng.</td>
+            <td>Cần kiểm tra sheet, cột ngày, cột số tiền, nhóm phân loại và dữ liệu thiếu.</td>
+          </tr>
+          <tr>
+            <td><strong>Bước 2</strong><br/>Phân tích & đề xuất</td>
+            <td>GPT phân tích dữ liệu, đề xuất KPI, biểu đồ, insight và bố cục báo cáo.</td>
+            <td><span class="tag tag-ok">Dashboard Concept</span><br/>Danh sách KPI, bảng, biểu đồ và nhận định.</td>
+            <td>Không nên viết code ngay khi chưa chốt logic nghiệp vụ.</td>
+          </tr>
+          <tr>
+            <td><strong>Bước 3</strong><br/>Tạo ảnh dashboard</td>
+            <td>GPT tạo ảnh hoặc mockup dashboard để người dùng chốt cách trình bày.</td>
+            <td><span class="tag tag-ok">Approved Layout</span><br/>Bố cục trình bày đã được duyệt.</td>
+            <td>Giúp tránh sửa đi sửa lại HTML nhiều lần.</td>
+          </tr>
+          <tr>
+            <td><strong>Bước 4</strong><br/>Tạo HTML tham số</td>
+            <td>GPT chuyển dashboard sang HTML nhưng để số liệu dưới dạng biến như {{TOTAL_REVENUE}}.</td>
+            <td><span class="tag tag-blue">HTML Template</span><br/>Template trình bày có placeholder.</td>
+            <td>Phải tách số liệu động khỏi phần giao diện tĩnh.</td>
+          </tr>
+          <tr>
+            <td><strong>Bước 5</strong><br/>Viết Python</td>
+            <td>Python đọc Excel/CSV, tính KPI, thay placeholder vào HTML và xuất báo cáo mới.</td>
+            <td><span class="tag tag-ok">Auto Render</span><br/>report.html cập nhật tự động.</td>
+            <td>Nên có file config và log để dễ vận hành.</td>
+          </tr>
+          <tr>
+            <td><strong>Bước 6</strong><br/>Đóng gói & đặt lịch</td>
+            <td>Dùng PyInstaller tạo file .exe và Task Scheduler để chạy định kỳ.</td>
+            <td><span class="tag tag-ok">Scheduled Report</span><br/>Báo cáo tự động theo lịch.</td>
+            <td>Cần kiểm tra quyền đọc/ghi thư mục và đường dẫn network nếu có.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">5. Minh họa dashboard sau khi chốt bố cục</h2>
+      <div class="card">
+        <div class="dashboard">
+          <div class="kpi">
+            <div class="label">Tổng doanh thu</div>
+            <div class="value">{{TOTAL_REVENUE}}</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Tăng trưởng kỳ này</div>
+            <div class="value">{{GROWTH_RATE}}</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Số giao dịch</div>
+            <div class="value">{{TOTAL_TXN}}</div>
+          </div>
+          <div class="chart">
+            <h3>Xu hướng theo tháng</h3>
+            <div class="bar-wrap">
+              <div class="bar" style="height: 45%;"></div>
+              <div class="bar" style="height: 68%;"></div>
+              <div class="bar" style="height: 54%;"></div>
+              <div class="bar" style="height: 82%;"></div>
+              <div class="bar" style="height: 74%;"></div>
+              <div class="bar" style="height: 92%;"></div>
+            </div>
+          </div>
+          <div class="card highlight" style="box-shadow:none;">
+            <h3>Insight chính</h3>
+            <p>{{MAIN_INSIGHT}}</p>
+            <p style="margin-top: 8px;">{{RISK_NOTE}}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">6. Nguyên tắc tham số hóa HTML</h2>
+      <div class="grid grid-2">
+        <div class="card">
+          <h3>Không hard-code số liệu</h3>
+          <p>HTML chỉ nên chứa placeholder. Mọi số liệu như KPI, tỷ lệ, nhận định, ngày báo cáo nên được truyền từ Python.</p>
+          <ul>
+            <li><strong>{{REPORT_DATE}}</strong>: ngày báo cáo</li>
+            <li><strong>{{TOTAL_REVENUE}}</strong>: tổng doanh thu</li>
+            <li><strong>{{GROWTH_RATE}}</strong>: tốc độ tăng trưởng</li>
+            <li><strong>{{MAIN_INSIGHT}}</strong>: nhận định chính</li>
+          </ul>
+        </div>
+        <div class="code">&lt;div class=&quot;kpi&quot;&gt;
+  &lt;div class=&quot;label&quot;&gt;Tổng doanh thu&lt;/div&gt;
+  &lt;div class=&quot;value&quot;&gt;<span class="param">{{TOTAL_REVENUE}}</span>&lt;/div&gt;
+  &lt;div class=&quot;note&quot;&gt;<span class="param">{{REVENUE_COMMENT}}</span>&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;section class=&quot;insight&quot;&gt;
+  &lt;h2&gt;Nhận định chính&lt;/h2&gt;
+  &lt;p&gt;<span class="param">{{MAIN_INSIGHT}}</span>&lt;/p&gt;
+&lt;/section&gt;</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">7. Python render HTML tự động</h2>
+      <div class="grid grid-2">
+        <div class="card">
+          <h3>Logic chính của Python</h3>
+          <ul>
+            <li>Đọc file Excel/CSV từ thư mục input.</li>
+            <li>Chuẩn hóa tên cột và kiểu dữ liệu.</li>
+            <li>Tính KPI, top/bottom, tỷ trọng, tăng trưởng.</li>
+            <li>Tạo dictionary tham số.</li>
+            <li>Replace placeholder trong HTML template.</li>
+            <li>Ghi file report HTML vào thư mục output.</li>
+          </ul>
+        </div>
+        <div class="code">import pandas as pd
+from pathlib import Path
+
+input_file = Path("input/data.xlsx")
+template_file = Path("template/dashboard_template.html")
+output_file = Path("output/dashboard_report.html")
+
+df = pd.read_excel(input_file)
+
+params = {
+    "{{TOTAL_REVENUE}}": f"{df['revenue'].sum():,.0f}",
+    "{{TOTAL_TXN}}": f"{len(df):,}",
+    "{{MAIN_INSIGHT}}": "Doanh thu tăng mạnh ở nhóm khách hàng SME."
+}
+
+html = template_file.read_text(encoding="utf-8")
+for key, value in params.items():
+    html = html.replace(key, str(value))
+
+output_file.write_text(html, encoding="utf-8")</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">8. Cấu trúc thư mục đề xuất</h2>
+      <div class="grid grid-2">
+        <div class="code">auto_report_project/
+│
+├── input/
+│   └── data.xlsx
+│
+├── template/
+│   └── dashboard_template.html
+│
+├── output/
+│   └── dashboard_report.html
+│
+├── logs/
+│   └── run_YYYYMMDD.log
+│
+├── config/
+│   └── config.json
+│
+└── main.py</div>
+        <div class="card">
+          <h3>Lý do nên tách thư mục</h3>
+          <ul>
+            <li><strong>input</strong>: chỉ chứa dữ liệu đầu vào.</li>
+            <li><strong>template</strong>: chứa HTML mẫu, ít thay đổi.</li>
+            <li><strong>output</strong>: chứa báo cáo đã render.</li>
+            <li><strong>logs</strong>: ghi trạng thái chạy, lỗi và thời gian xử lý.</li>
+            <li><strong>config</strong>: khai báo đường dẫn, tên cột, rule tính KPI.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">9. Đóng gói và đặt lịch chạy</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Thành phần</th>
+            <th>Vai trò</th>
+            <th>Lệnh / thao tác mẫu</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>PyInstaller</strong></td>
+            <td>Đóng gói file Python thành .exe để chạy trên máy người dùng.</td>
+            <td><span class="tag tag-blue">Build</span><br/><code>pyinstaller --onefile --name auto_report main.py</code></td>
+          </tr>
+          <tr>
+            <td><strong>Task Scheduler</strong></td>
+            <td>Đặt lịch chạy file .exe theo ngày, tuần hoặc tháng.</td>
+            <td><span class="tag tag-ok">Schedule</span><br/>Create Basic Task → Trigger → Action: Start a program</td>
+          </tr>
+          <tr>
+            <td><strong>Log file</strong></td>
+            <td>Theo dõi trạng thái thành công/thất bại của từng lần chạy.</td>
+            <td><span class="tag tag-warn">Operation</span><br/>Ghi log start time, end time, input file, output file, error message.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="note" style="margin-top: 14px;">
+        <strong>Lưu ý vận hành:</strong> nếu input/output nằm trên shared folder hoặc network drive, cần kiểm tra quyền truy cập của user chạy Task Scheduler.
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">10. Kế hoạch triển khai thử nghiệm</h2>
+      <div class="timeline">
+        <div class="card week">
+          <div class="week-number">Giai đoạn 1</div>
+          <h3>Chốt dữ liệu mẫu</h3>
+          <ul>
+            <li>Chọn 1 file Excel/CSV thật.</li>
+            <li>Xác định các cột chính.</li>
+            <li>Chốt KPI cần báo cáo.</li>
+          </ul>
+        </div>
+        <div class="card week">
+          <div class="week-number">Giai đoạn 2</div>
+          <h3>Thiết kế dashboard</h3>
+          <ul>
+            <li>GPT đề xuất layout.</li>
+            <li>Tạo mockup ảnh.</li>
+            <li>Chốt màu sắc và bố cục.</li>
+          </ul>
+        </div>
+        <div class="card week">
+          <div class="week-number">Giai đoạn 3</div>
+          <h3>Code tự động hóa</h3>
+          <ul>
+            <li>Tạo HTML template.</li>
+            <li>Viết Python render.</li>
+            <li>Test với nhiều file dữ liệu.</li>
+          </ul>
+        </div>
+        <div class="card week">
+          <div class="week-number">Giai đoạn 4</div>
+          <h3>Vận hành</h3>
+          <ul>
+            <li>Đóng gói .exe.</li>
+            <li>Đặt lịch Task Scheduler.</li>
+            <li>Theo dõi log và cải tiến.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">11. Rủi ro cần lưu ý</h2>
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>Dữ liệu đầu vào thay đổi</h3>
+          <p>Tên cột hoặc cấu trúc sheet thay đổi có thể làm script lỗi. Cần có bước kiểm tra schema trước khi tính toán.</p>
+        </div>
+        <div class="card">
+          <h3>Nhận định tự động chưa chuẩn</h3>
+          <p>Các insight dạng text nên có rule rõ ràng hoặc cơ chế review trước khi gửi báo cáo chính thức.</p>
+        </div>
+        <div class="card">
+          <h3>Lỗi vận hành định kỳ</h3>
+          <p>Task Scheduler có thể lỗi do quyền thư mục, đường dẫn network, thiếu file input hoặc máy không bật đúng thời điểm.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">12. Kết luận tóm tắt</h2>
+      <div class="card highlight decision">
+        <div class="badge-large">
+          <span>GPT</span>
+          <span>+ Python</span>
+        </div>
+        <div>
+          <h3>Mô hình phù hợp để tự động hóa báo cáo lặp lại</h3>
+          <p>
+            GPT phù hợp để hỗ trợ đọc hiểu dữ liệu, đề xuất dashboard, viết HTML template và sinh code Python ban đầu.
+            Python phù hợp để vận hành ổn định, cập nhật số liệu từ Excel/CSV và xuất báo cáo HTML tự động.
+            Khi kết hợp thêm PyInstaller và Task Scheduler, quy trình này có thể biến một báo cáo thủ công thành báo cáo định kỳ tự chạy.
+          </p>
+          <ul>
+            <li><strong>GPT:</strong> phân tích, thiết kế, sinh template và hỗ trợ code.</li>
+            <li><strong>HTML:</strong> trình bày báo cáo đẹp, dễ mở trên trình duyệt.</li>
+            <li><strong>Python:</strong> đọc dữ liệu, tính số liệu, render output.</li>
+            <li><strong>Task Scheduler:</strong> tự động chạy theo lịch.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">
+      Tự động hóa báo cáo · Excel/CSV → GPT → HTML Template → Python Render → Scheduled Report
+    </div>
+  </main>
+</body>
+</html>

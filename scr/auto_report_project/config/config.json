@@ -1,0 +1,5 @@
+{
+  "data_file": "input/data.xlsx",
+  "template_file": "template/dashboard_template.html",
+  "output_file": "output/dashboard_report.html"
+}

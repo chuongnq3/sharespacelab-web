@@ -1,0 +1,718 @@
+/* =========================================================
+   style_python_foundation.css
+   Component styles dac thu cua trang Python Foundation.
+   Reuse toan bo layout/header tu style_practice_b1.css
+   —  chi dinh nghia cac component moi o day.
+========================================================= */
+
+
+/* =========================================================
+   BLOCKQUOTE
+========================================================= */
+
+blockquote {
+  border-left: 4px solid var(--primary);
+  margin: 16px 0;
+  padding: 12px 18px;
+  background: #F4F8FF;
+  border-radius: 0 12px 12px 0;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 15px;
+}
+
+
+/* =========================================================
+   FLOW CHAIN  (vertical / horizontal)
+========================================================= */
+
+.flow-chain {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+
+.flow-node {
+  background: #FFFFFF;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+  box-shadow: 0 2px 8px rgba(0,36,107,0.05);
+  min-width: 180px;
+  text-align: center;
+}
+
+.flow-node--end {
+  background: var(--primary);
+  color: #FFFFFF;
+  border-color: var(--primary);
+}
+
+.flow-node--ai {
+  background: #EAF1FF;
+  border-color: var(--accent-dark);
+  color: var(--primary);
+}
+
+.flow-arrow {
+  align-self: center;
+  font-size: 20px;
+  color: var(--primary);
+  opacity: 0.45;
+  line-height: 1.4;
+  margin: 2px 0;
+}
+
+/* horizontal variant */
+.flow-chain--horizontal {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 18px;
+  background: var(--surface-soft);
+  border: 1px dashed var(--accent-dark);
+  border-radius: 14px;
+  margin: 14px 0;
+}
+
+.flow-arrow--right {
+  margin: 0;
+  font-size: 18px;
+}
+
+
+/* =========================================================
+   COMPARE WRAP  (Truoc day vs Ngay nay)
+========================================================= */
+
+.compare-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin: 16px 0;
+}
+
+.compare-label {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 5px 14px;
+  border-radius: 999px;
+  display: inline-block;
+  margin-bottom: 14px;
+}
+
+.compare-label--before {
+  background: #F2F6FF;
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+
+.compare-label--now {
+  background: var(--primary);
+  color: #FFFFFF;
+}
+
+
+/* =========================================================
+   GOAL COMPARE  (Sai cach vs Dung cach)
+========================================================= */
+
+.goal-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.goal-item {
+  border-radius: 14px;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+}
+
+.goal-item p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.goal-item p + p { margin-top: 8px; }
+
+.goal-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.goal-item--bad  { background: #FFF8F8; border-color: #FFCDD2; }
+.goal-item--bad .goal-label  { background: #FFCDD2; color: #B71C1C; }
+
+.goal-item--good { background: #F0FBF4; border-color: #C8E6C9; }
+.goal-item--good .goal-label { background: #C8E6C9; color: #1B5E20; }
+
+
+/* =========================================================
+   4-QUESTION GRID
+========================================================= */
+
+.four-q-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 14px;
+  margin: 16px 0;
+}
+
+.four-q-card {
+  background: #FFFFFF;
+  border: 1.5px solid var(--line);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border-color .15s, box-shadow .15s, transform .15s;
+}
+
+.four-q-card:hover {
+  border-color: var(--accent-dark);
+  box-shadow: 0 8px 24px rgba(0,36,107,0.09);
+  transform: translateY(-2px);
+}
+
+.four-q-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #FFFFFF;
+  font-size: 16px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.four-q-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.four-q-examples {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   STEPS LIST  (cach doc code 4 buoc)
+========================================================= */
+
+.steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 16px 0;
+  position: relative;
+}
+
+.steps-list::before {
+  content: "";
+  position: absolute;
+  left: 20px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--line);
+  border-radius: 2px;
+}
+
+.step-item {
+  display: flex;
+  gap: 18px;
+  padding: 14px 0;
+  position: relative;
+}
+
+.step-num {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.2;
+  z-index: 1;
+  box-shadow: 0 4px 12px rgba(0,36,107,0.18);
+}
+
+.step-body {
+  flex: 1;
+  padding-top: 8px;
+}
+
+.step-body strong {
+  display: block;
+  font-size: 15px;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+
+.step-body p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+
+/* =========================================================
+   BUG GRID  (4 nhom bug)
+========================================================= */
+
+.bug-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 14px;
+  margin: 16px 0;
+}
+
+.bug-card {
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid transparent;
+}
+
+.bug-icon {
+  font-size: 26px;
+  margin-bottom: 8px;
+}
+
+.bug-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.bug-card ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.bug-card--data    { background: #F0FBF4; border-color: #C8E6C9; }
+.bug-card--data .bug-title    { color: #1B5E20; }
+
+.bug-card--logic   { background: #FFF8EB; border-color: #FFE0B2; }
+.bug-card--logic .bug-title   { color: #B54708; }
+
+.bug-card--runtime { background: #FFF8F8; border-color: #FFCDD2; }
+.bug-card--runtime .bug-title { color: #B71C1C; }
+
+.bug-card--config  { background: #F4F8FF; border-color: #BBDEFB; }
+.bug-card--config .bug-title  { color: #0D47A1; }
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+  .compare-wrap  { grid-template-columns: 1fr; }
+  .goal-compare  { grid-template-columns: 1fr; }
+  .four-q-grid   { grid-template-columns: 1fr; }
+  .bug-grid      { grid-template-columns: 1fr; }
+
+  .flow-chain--horizontal { flex-direction: column; }
+  .flow-arrow--right      { transform: rotate(90deg); }
+}
+
+/* =========================================================
+   style_python_foundation.css
+   Component styles dac thu cua trang Python Foundation.
+   Reuse toan bo layout/header tu style_practice_b1.css
+   —  chi dinh nghia cac component moi o day.
+========================================================= */
+
+
+/* =========================================================
+   BLOCKQUOTE
+========================================================= */
+
+blockquote {
+  border-left: 4px solid var(--primary);
+  margin: 16px 0;
+  padding: 12px 18px;
+  background: #F4F8FF;
+  border-radius: 0 12px 12px 0;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 15px;
+}
+
+
+/* =========================================================
+   FLOW CHAIN  (vertical / horizontal)
+========================================================= */
+
+.flow-chain {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+}
+
+.flow-node {
+  background: #FFFFFF;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 11px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+  box-shadow: 0 2px 8px rgba(0,36,107,0.05);
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.flow-node--end {
+  background: var(--primary);
+  color: #FFFFFF;
+  border-color: var(--primary);
+  box-shadow: 0 4px 14px rgba(0,36,107,0.22);
+}
+
+.flow-node--ai {
+  background: #EAF1FF;
+  border-color: var(--accent-dark);
+  color: var(--primary);
+}
+
+.flow-arrow {
+  align-self: center;
+  font-size: 16px;
+  color: var(--primary);
+  opacity: 0.35;
+  line-height: 1;
+  margin: 6px 0;
+  user-select: none;
+}
+
+/* horizontal variant */
+.flow-chain--horizontal {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 18px;
+  background: var(--surface-soft);
+  border: 1px dashed var(--accent-dark);
+  border-radius: 14px;
+  margin: 14px 0;
+}
+
+.flow-chain--horizontal .flow-node {
+  width: auto;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+.flow-arrow--right {
+  margin: 0;
+  font-size: 18px;
+  opacity: 0.35;
+}
+
+
+/* =========================================================
+   COMPARE WRAP  (Truoc day vs Ngay nay)
+========================================================= */
+
+.compare-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin: 16px 0;
+  align-items: start;
+}
+
+/* moi cot la 1 card rieng */
+.compare-col {
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px 18px 24px;
+}
+
+.compare-label {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 5px 14px;
+  border-radius: 999px;
+  display: inline-block;
+  margin-bottom: 18px;
+}
+
+.compare-label--before {
+  background: #EAECF2;
+  color: #5A6480;
+  border: 1px solid #D0D5E8;
+}
+
+.compare-label--now {
+  background: var(--primary);
+  color: #FFFFFF;
+}
+
+
+/* =========================================================
+   GOAL COMPARE  (Sai cach vs Dung cach)
+========================================================= */
+
+.goal-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.goal-item {
+  border-radius: 14px;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+}
+
+.goal-item p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.goal-item p + p { margin-top: 8px; }
+
+.goal-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.goal-item--bad  { background: #FFF8F8; border-color: #FFCDD2; }
+.goal-item--bad .goal-label  { background: #FFCDD2; color: #B71C1C; }
+
+.goal-item--good { background: #F0FBF4; border-color: #C8E6C9; }
+.goal-item--good .goal-label { background: #C8E6C9; color: #1B5E20; }
+
+
+/* =========================================================
+   4-QUESTION GRID
+========================================================= */
+
+.four-q-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 14px;
+  margin: 16px 0;
+}
+
+.four-q-card {
+  background: #FFFFFF;
+  border: 1.5px solid var(--line);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border-color .15s, box-shadow .15s, transform .15s;
+}
+
+.four-q-card:hover {
+  border-color: var(--accent-dark);
+  box-shadow: 0 8px 24px rgba(0,36,107,0.09);
+  transform: translateY(-2px);
+}
+
+.four-q-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #FFFFFF;
+  font-size: 16px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.four-q-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.four-q-examples {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   STEPS LIST  (cach doc code 4 buoc)
+========================================================= */
+
+.steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 16px 0;
+  position: relative;
+}
+
+.steps-list::before {
+  content: "";
+  position: absolute;
+  left: 20px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--line);
+  border-radius: 2px;
+}
+
+.step-item {
+  display: flex;
+  gap: 18px;
+  padding: 14px 0;
+  position: relative;
+}
+
+.step-num {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.2;
+  z-index: 1;
+  box-shadow: 0 4px 12px rgba(0,36,107,0.18);
+}
+
+.step-body {
+  flex: 1;
+  padding-top: 8px;
+}
+
+.step-body strong {
+  display: block;
+  font-size: 15px;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+
+.step-body p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+
+/* =========================================================
+   BUG GRID  (4 nhom bug)
+========================================================= */
+
+.bug-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 14px;
+  margin: 16px 0;
+}
+
+.bug-card {
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid transparent;
+}
+
+.bug-icon {
+  font-size: 26px;
+  margin-bottom: 8px;
+}
+
+.bug-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.bug-card ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.bug-card--data    { background: #F0FBF4; border-color: #C8E6C9; }
+.bug-card--data .bug-title    { color: #1B5E20; }
+
+.bug-card--logic   { background: #FFF8EB; border-color: #FFE0B2; }
+.bug-card--logic .bug-title   { color: #B54708; }
+
+.bug-card--runtime { background: #FFF8F8; border-color: #FFCDD2; }
+.bug-card--runtime .bug-title { color: #B71C1C; }
+
+.bug-card--config  { background: #F4F8FF; border-color: #BBDEFB; }
+.bug-card--config .bug-title  { color: #0D47A1; }
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+  .compare-wrap  { grid-template-columns: 1fr; }
+  .goal-compare  { grid-template-columns: 1fr; }
+  .four-q-grid   { grid-template-columns: 1fr; }
+  .bug-grid      { grid-template-columns: 1fr; }
+
+  .flow-chain--horizontal { flex-direction: column; }
+  .flow-arrow--right      { transform: rotate(90deg); }
+}

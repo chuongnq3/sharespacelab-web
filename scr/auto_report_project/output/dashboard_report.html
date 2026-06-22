@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EXECUTIVE DASHBOARD</title>
+
+  <!-- Nếu chạy offline, tải chart.umd.min.js về assets rồi đổi src thành: ../assets/chart.umd.min.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --navy: #071B3D;
+      --navy2: #092654;
+      --blue: #155EEF;
+      --blue2: #2970FF;
+      --green: #12B76A;
+      --purple: #7A5AF8;
+      --orange: #F79009;
+      --red: #D92D20;
+      --bg: #F4F6FA;
+      --card: #FFFFFF;
+      --line: #E4E9F2;
+      --text: #07152F;
+      --muted: #667085;
+      --shadow: 0 10px 26px rgba(16, 24, 40, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 245px 1fr;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      background: linear-gradient(180deg, var(--navy), #04152F);
+      color: #fff;
+      padding: 26px 18px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .brand {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 34px;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--blue), #6EA8FE);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 22px;
+    }
+
+    .brand-text {
+      font-size: 16px;
+      line-height: 1.12;
+      font-weight: 900;
+      letter-spacing: .02em;
+    }
+
+    .nav {
+      display: grid;
+      gap: 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      color: rgba(255,255,255,.84);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .nav-item.active {
+      background: linear-gradient(135deg, var(--blue), var(--blue2));
+      color: #fff;
+      box-shadow: 0 12px 22px rgba(21, 94, 239, .28);
+    }
+
+    .nav-icon {
+      width: 18px;
+      text-align: center;
+      opacity: .9;
+    }
+
+    .sidebar-card {
+      margin-top: 38px;
+      height: 150px;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 72% 25%, rgba(110,168,254,.35), transparent 32%),
+        linear-gradient(135deg, rgba(41,112,255,.25), rgba(255,255,255,.04));
+      border: 1px solid rgba(255,255,255,.10);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sidebar-bars {
+      position: absolute;
+      left: 28px;
+      right: 28px;
+      bottom: 32px;
+      height: 78px;
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+    }
+
+    .sidebar-bars span {
+      display: block;
+      flex: 1;
+      border-radius: 7px 7px 0 0;
+      background: linear-gradient(180deg, #9DBBFF, #155EEF);
+    }
+
+    .sidebar-footer {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 24px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: rgba(255,255,255,.72);
+    }
+
+    .sidebar-footer b {
+      color: #fff;
+    }
+
+    .main {
+      padding: 24px 26px 32px;
+      min-width: 0;
+    }
+
+    .top {
+      display: grid;
+      grid-template-columns: 1fr 520px;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .title-card, .filter-card, .card, .kpi {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .title-card {
+      padding: 22px 24px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 31px;
+      letter-spacing: -.04em;
+      color: #061331;
+    }
+
+    .subtitle {
+      margin-top: 6px;
+      color: var(--blue);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .meta b {
+      color: var(--text);
+    }
+
+    .filter-card {
+      padding: 14px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .filter {
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 10px 12px;
+      background: #fff;
+    }
+
+    .filter label {
+      display: block;
+      font-size: 11px;
+      color: var(--text);
+      font-weight: 900;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+    }
+
+    .filter input, .filter select {
+      width: 100%;
+      border: none;
+      outline: none;
+      color: #344054;
+      font-size: 13px;
+      background: transparent;
+      font-family: inherit;
+      font-weight: 700;
+    }
+
+    .filter-actions {
+      grid-column: span 2;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 9px 14px;
+      font-weight: 900;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--blue);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #EFF4FF;
+      color: var(--blue);
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .kpi {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 58px 1fr;
+      gap: 15px;
+      align-items: center;
+      min-height: 120px;
+    }
+
+    .kpi-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      font-weight: 900;
+    }
+
+    .bg-blue { background: linear-gradient(135deg, #155EEF, #669DFF); }
+    .bg-green { background: linear-gradient(135deg, #039855, #32D583); }
+    .bg-purple { background: linear-gradient(135deg, #7A5AF8, #A48AFB); }
+    .bg-orange { background: linear-gradient(135deg, #F79009, #FDB022); }
+
+    .kpi-label {
+      font-size: 12px;
+      font-weight: 900;
+      color: #101828;
+      margin-bottom: 7px;
+    }
+
+    .kpi-value {
+      font-size: 27px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: -.03em;
+      white-space: nowrap;
+    }
+
+    .kpi-unit {
+      font-size: 12px;
+      font-weight: 900;
+      margin-left: 4px;
+    }
+
+    .kpi-note {
+      margin-top: 9px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .up {
+      color: #039855;
+      font-weight: 900;
+      margin-left: 8px;
+    }
+
+    .down {
+      color: var(--red);
+      font-weight: 900;
+      margin-left: 8px;
+    }
+
+    .flat {
+      color: var(--muted);
+      font-weight: 900;
+      margin-left: 8px;
+    }
+
+    .chart-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .chart-row-4 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1.25fr 1.45fr;
+      gap: 14px;
+    }
+
+    .card {
+      padding: 18px;
+      min-width: 0;
+    }
+
+    .card-title {
+      margin: 0;
+      font-size: 15px;
+      text-transform: uppercase;
+      font-weight: 900;
+      color: #101828;
+    }
+
+    .card-subtitle {
+      margin: 2px 0 10px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .chart-box {
+      position: relative;
+      height: 250px;
+    }
+
+    .chart-box-small {
+      position: relative;
+      height: 230px;
+    }
+
+    .bar-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 72px 1fr 70px;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+    }
+
+    .bar-bg {
+      height: 13px;
+      background: #EEF2F7;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #155EEF, #5C98FF);
+      border-radius: 999px;
+    }
+
+    .bar-fill.green {
+      background: linear-gradient(90deg, #12B76A, #62E4B4);
+    }
+
+    .insights {
+      display: grid;
+      gap: 11px;
+      margin-top: 8px;
+    }
+
+    .insight {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #EEF2F7;
+    }
+
+    .insight:last-child {
+      border-bottom: none;
+    }
+
+    .insight-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .insight-icon.ok {
+      color: var(--green);
+      background: #ECFDF3;
+    }
+
+    .insight-icon.warn {
+      color: var(--orange);
+      background: #FFF7E8;
+    }
+
+    .insight p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.45;
+      color: #344054;
+    }
+
+    .insight b {
+      color: #101828;
+    }
+
+    .summary {
+      margin-top: 8px;
+      color: #344054;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .recommendation {
+      margin-top: 14px;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 12px;
+      border-radius: 14px;
+      background: #F4F3FF;
+      color: #3538CD;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .recommendation-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      border: 3px solid #7A5AF8;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+    }
+
+    .dq-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 9px;
+      margin-top: 12px;
+    }
+
+    .dq {
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 13px 8px;
+      text-align: center;
+    }
+
+    .dq-label {
+      font-size: 12px;
+      font-weight: 900;
+      margin-bottom: 7px;
+    }
+
+    .dq-value {
+      font-size: 25px;
+      color: #039855;
+      font-weight: 900;
+    }
+
+    .dq-note {
+      font-size: 12px;
+      color: #039855;
+      margin-top: 2px;
+    }
+
+    .dq-final {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 1fr 54px;
+      gap: 10px;
+      align-items: center;
+      color: #155EEF;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .check {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #EFF4FF;
+      color: #155EEF;
+      font-size: 30px;
+      font-weight: 900;
+    }
+
+    @media (max-width: 1200px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .top,
+      .kpi-grid,
+      .chart-row-2,
+      .chart-row-4,
+      .bottom-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-card {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-actions {
+        grid-column: span 1;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .main {
+        padding: 0;
+      }
+
+      .title-card,
+      .filter-card,
+      .card,
+      .kpi {
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">▥</div>
+        <div class="brand-text">BUSINESS<br>INTELLIGENCE</div>
+      </div>
+
+      <nav class="nav">
+        <div class="nav-item active"><span class="nav-icon">⌂</span>Overview</div>
+        <div class="nav-item"><span class="nav-icon">▣</span>Financials</div>
+        <div class="nav-item"><span class="nav-icon">△</span>Products</div>
+        <div class="nav-item"><span class="nav-icon">◉</span>Regions</div>
+        <div class="nav-item"><span class="nav-icon">◎</span>Branches</div>
+        <div class="nav-item"><span class="nav-icon">▦</span>Insights</div>
+        <div class="nav-item"><span class="nav-icon">＋</span>Data Quality</div>
+      </nav>
+
+      <div class="sidebar-card">
+        <div class="sidebar-bars">
+          <span style="height:42%"></span>
+          <span style="height:58%"></span>
+          <span style="height:76%"></span>
+          <span style="height:100%"></span>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <b>About this dashboard</b><br>
+        This dashboard provides an interactive overview of business performance across date range, regions, branches and products.
+        <br><br>
+        <b>Source:</b><br>
+        data.xlsx
+      </div>
+    </aside>
+
+    <main class="main">
+      <section class="top">
+        <div class="title-card">
+          <h1>EXECUTIVE DASHBOARD</h1>
+          <div class="subtitle">Interactive Business Performance Overview</div>
+          <div class="meta">
+            <span>Data as of: <b id="dataAsOf">-</b></span>
+            <span>Last updated: <b>14/06/2026 18:55</b></span>
+            <span>Rows selected: <b id="rowsSelected">0</b></span>
+          </div>
+        </div>
+
+        <div class="filter-card">
+          <div class="filter">
+            <label>Start Month</label>
+            <input type="month" id="startMonth">
+          </div>
+
+          <div class="filter">
+            <label>End Month</label>
+            <input type="month" id="endMonth">
+          </div>
+
+          <div class="filter">
+            <label>Region</label>
+            <select id="regionFilter"></select>
+          </div>
+
+          <div class="filter">
+            <label>Branch</label>
+            <select id="branchFilter"></select>
+          </div>
+
+          <div class="filter-actions">
+            <button class="btn btn-secondary" id="resetFilter">Reset</button>
+            <button class="btn btn-primary" id="applyFilter">Apply Filter</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-icon bg-blue">$</div>
+          <div>
+            <div class="kpi-label">TOTAL REVENUE</div>
+            <div class="kpi-value"><span id="totalRevenue">0</span> <span class="kpi-unit">VND</span></div>
+            <div class="kpi-note">vs. Previous Period <span id="revenueDelta" class="flat">-</span></div>
+          </div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-icon bg-green">↗</div>
+          <div>
+            <div class="kpi-label">TOTAL PROFIT</div>
+            <div class="kpi-value"><span id="totalProfit">0</span> <span class="kpi-unit">VND</span></div>
+            <div class="kpi-note">vs. Previous Period <span id="profitDelta" class="flat">-</span></div>
+          </div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-icon bg-purple">▤</div>
+          <div>
+            <div class="kpi-label">TOTAL TRANSACTIONS</div>
+            <div class="kpi-value" id="totalTransactions">0</div>
+            <div class="kpi-note">vs. Previous Period <span id="txnDelta" class="flat">-</span></div>
+          </div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-icon bg-orange">◔</div>
+          <div>
+            <div class="kpi-label">PROFIT MARGIN</div>
+            <div class="kpi-value" id="profitMargin">0%</div>
+            <div class="kpi-note">vs. Previous Period <span id="marginDelta" class="flat">-</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="chart-row-2">
+        <div class="card">
+          <h2 class="card-title">Revenue Trend</h2>
+          <div class="card-subtitle">Revenue (B VND)</div>
+          <div class="chart-box">
+            <canvas id="revenueTrendChart"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">Profit Trend</h2>
+          <div class="card-subtitle">Profit (B VND)</div>
+          <div class="chart-box">
+            <canvas id="profitTrendChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section class="chart-row-4">
+        <div class="card">
+          <h2 class="card-title">Revenue by Region</h2>
+          <div class="card-subtitle">(B VND)</div>
+          <div class="bar-list" id="regionBars"></div>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">Top Branches by Revenue</h2>
+          <div class="card-subtitle">(B VND)</div>
+          <div class="bar-list" id="branchBars"></div>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">Revenue by Product</h2>
+          <div class="card-subtitle">(B VND)</div>
+          <div class="chart-box-small">
+            <canvas id="productDonutChart"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">Revenue vs Cost</h2>
+          <div class="card-subtitle">(B VND)</div>
+          <div class="chart-box-small">
+            <canvas id="revenueCostChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section class="bottom-grid">
+        <div class="card">
+          <h2 class="card-title">AI Insights</h2>
+          <div class="insights">
+            <div class="insight">
+              <div class="insight-icon ok">↗</div>
+              <p id="insight1">-</p>
+            </div>
+            <div class="insight">
+              <div class="insight-icon ok">✓</div>
+              <p id="insight2">-</p>
+            </div>
+            <div class="insight">
+              <div class="insight-icon ok">↗</div>
+              <p id="insight3">-</p>
+            </div>
+            <div class="insight">
+              <div class="insight-icon warn">!</div>
+              <p id="insight4">-</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">Executive Summary</h2>
+          <div class="summary" id="executiveSummary">-</div>
+
+          <div class="recommendation">
+            <div class="recommendation-icon">◎</div>
+            <div>
+              <b>Recommendation:</b>
+              <span id="recommendation">-</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">Data Quality Overview</h2>
+          <div class="dq-grid">
+            <div class="dq">
+              <div class="dq-label">Completeness</div>
+              <div class="dq-value" id="dqCompleteness">-</div>
+              <div class="dq-note" id="dqCompletenessNote">-</div>
+            </div>
+            <div class="dq">
+              <div class="dq-label">Consistency</div>
+              <div class="dq-value" id="dqConsistency">-</div>
+              <div class="dq-note" id="dqConsistencyNote">-</div>
+            </div>
+            <div class="dq">
+              <div class="dq-label">Timeliness</div>
+              <div class="dq-value" id="dqTimeliness">100%</div>
+              <div class="dq-note">Excellent</div>
+            </div>
+            <div class="dq">
+              <div class="dq-label">Validity</div>
+              <div class="dq-value" id="dqValidity">-</div>
+              <div class="dq-note" id="dqValidityNote">-</div>
+            </div>
+          </div>
+
+          <div class="dq-final">
+            <div id="dqFinalMessage">-</div>
+            <div class="check">✓</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const rawData = [{"REPORT_DATE": "2026-01-31", "REGION": "North", "BRANCH": "HN01", "PRODUCT": "Loan", "CUSTOMER_SEGMENT": "Retail", "TRANSACTIONS": 1250, "REVENUE": 250000000, "COST": 180000000, "PROFIT": 70000000}, {"REPORT_DATE": "2026-01-31", "REGION": "North", "BRANCH": "HN02", "PRODUCT": "Credit Card", "CUSTOMER_SEGMENT": "Retail", "TRANSACTIONS": 980, "REVENUE": 120000000, "COST": 70000000, "PROFIT": 50000000}, {"REPORT_DATE": "2026-01-31", "REGION": "South", "BRANCH": "HCM01", "PRODUCT": "Loan", "CUSTOMER_SEGMENT": "SME", "TRANSACTIONS": 850, "REVENUE": 320000000, "COST": 220000000, "PROFIT": 100000000}, {"REPORT_DATE": "2026-02-28", "REGION": "North", "BRANCH": "HN01", "PRODUCT": "Loan", "CUSTOMER_SEGMENT": "Retail", "TRANSACTIONS": 1320, "REVENUE": 270000000, "COST": 190000000, "PROFIT": 80000000}, {"REPORT_DATE": "2026-02-28", "REGION": "Central", "BRANCH": "DN01", "PRODUCT": "Deposit", "CUSTOMER_SEGMENT": "Retail", "TRANSACTIONS": 2100, "REVENUE": 90000000, "COST": 25000000, "PROFIT": 65000000}, {"REPORT_DATE": "2026-03-31", "REGION": "South", "BRANCH": "HCM01", "PRODUCT": "Loan", "CUSTOMER_SEGMENT": "SME", "TRANSACTIONS": 940, "REVENUE": 350000000, "COST": 230000000, "PROFIT": 120000000}, {"REPORT_DATE": "2026-03-31", "REGION": "South", "BRANCH": "HCM02", "PRODUCT": "Credit Card", "CUSTOMER_SEGMENT": "Corporate", "TRANSACTIONS": 650, "REVENUE": 180000000, "COST": 90000000, "PROFIT": 90000000}, {"REPORT_DATE": "2026-04-30", "REGION": "North", "BRANCH": "HN02", "PRODUCT": "Deposit", "CUSTOMER_SEGMENT": "Retail", "TRANSACTIONS": 2450, "REVENUE": 110000000, "COST": 30000000, "PROFIT": 80000000}, {"REPORT_DATE": "2026-04-30", "REGION": "Central", "BRANCH": "DN01", "PRODUCT": "Loan", "CUSTOMER_SEGMENT": "SME", "TRANSACTIONS": 760, "REVENUE": 290000000, "COST": 190000000, "PROFIT": 100000000}, {"REPORT_DATE": "2026-05-31", "REGION": "South", "BRANCH": "HCM02", "PRODUCT": "Loan", "CUSTOMER_SEGMENT": "Corporate", "TRANSACTIONS": 720, "REVENUE": 410000000, "COST": 270000000, "PROFIT": 140000000}, {"REPORT_DATE": "2026-05-31", "REGION": "North", "BRANCH": "HN01", "PRODUCT": "Credit Card", "CUSTOMER_SEGMENT": "Retail", "TRANSACTIONS": 1450, "REVENUE": 150000000, "COST": 85000000, "PROFIT": 65000000}, {"REPORT_DATE": "2026-06-30", "REGION": "Central", "BRANCH": "DN01", "PRODUCT": "Deposit", "CUSTOMER_SEGMENT": "Retail", "TRANSACTIONS": 2600, "REVENUE": 125000000, "COST": 35000000, "PROFIT": 90000000}];
+
+    const config = {
+      sourceFileName: "data.xlsx"
+    };
+
+    let revenueChart;
+    let profitChart;
+    let productChart;
+    let revenueCostChart;
+
+    Chart.defaults.font.family = 'Arial, Segoe UI, sans-serif';
+    Chart.defaults.color = '#344054';
+
+    function num(v) {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function parseDate(value) {
+      return new Date(value);
+    }
+
+    function monthKey(dateValue) {
+      const d = parseDate(dateValue);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      return `${y}-${m}`;
+    }
+
+    function monthLabel(month) {
+      const [y, m] = month.split('-').map(Number);
+      const d = new Date(y, m - 1, 1);
+      return d.toLocaleString('en-US', { month: 'short', year: 'numeric' });
+    }
+
+    function formatNumber(n) {
+      return Math.round(num(n)).toLocaleString('en-US');
+    }
+
+    function formatMoneyB(v) {
+      return `${(num(v) / 1_000_000_000).toFixed(2)}B`;
+    }
+
+    function toBillion(v) {
+      return Number((num(v) / 1_000_000_000).toFixed(2));
+    }
+
+    function formatPct(v) {
+      return `${num(v).toFixed(1)}%`;
+    }
+
+    function sum(rows, field) {
+      return rows.reduce((acc, row) => acc + num(row[field]), 0);
+    }
+
+    function groupSum(rows, keyField, valueFields) {
+      const map = new Map();
+
+      rows.forEach(row => {
+        const key = row[keyField] || 'N/A';
+
+        if (!map.has(key)) {
+          const init = { key };
+          valueFields.forEach(f => init[f] = 0);
+          map.set(key, init);
+        }
+
+        const obj = map.get(key);
+        valueFields.forEach(f => obj[f] += num(row[f]));
+      });
+
+      return Array.from(map.values());
+    }
+
+    function groupMonthly(rows) {
+      const map = new Map();
+
+      rows.forEach(row => {
+        const key = monthKey(row.REPORT_DATE);
+
+        if (!map.has(key)) {
+          map.set(key, {
+            month: key,
+            REVENUE: 0,
+            COST: 0,
+            PROFIT: 0,
+            TRANSACTIONS: 0
+          });
+        }
+
+        const obj = map.get(key);
+        obj.REVENUE += num(row.REVENUE);
+        obj.COST += num(row.COST);
+        obj.PROFIT += num(row.PROFIT);
+        obj.TRANSACTIONS += num(row.TRANSACTIONS);
+      });
+
+      return Array.from(map.values()).sort((a, b) => a.month.localeCompare(b.month));
+    }
+
+    function getUniqueValues(field) {
+      return Array.from(
+        new Set(rawData.map(row => row[field]).filter(v => v !== null && v !== undefined && String(v).trim() !== ''))
+      ).sort();
+    }
+
+    function fillSelect(selectId, values, allLabel) {
+      const el = document.getElementById(selectId);
+      el.innerHTML = '';
+
+      const all = document.createElement('option');
+      all.value = 'All';
+      all.textContent = allLabel;
+      el.appendChild(all);
+
+      values.forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v;
+        opt.textContent = v;
+        el.appendChild(opt);
+      });
+    }
+
+    function initFilters() {
+      const months = Array.from(new Set(rawData.map(r => monthKey(r.REPORT_DATE)))).sort();
+
+      if (months.length) {
+        document.getElementById('startMonth').value = months[0];
+        document.getElementById('endMonth').value = months[months.length - 1];
+      }
+
+      fillSelect('regionFilter', getUniqueValues('REGION'), 'All Regions');
+      fillSelect('branchFilter', getUniqueValues('BRANCH'), 'All Branches');
+    }
+
+    function updateBranchOptionsByRegion() {
+      const selectedRegion = document.getElementById('regionFilter').value;
+      const currentBranch = document.getElementById('branchFilter').value;
+
+      const branchRows = selectedRegion === 'All'
+        ? rawData
+        : rawData.filter(r => r.REGION === selectedRegion);
+
+      const branches = Array.from(new Set(branchRows.map(r => r.BRANCH).filter(Boolean))).sort();
+
+      fillSelect('branchFilter', branches, 'All Branches');
+
+      if (branches.includes(currentBranch)) {
+        document.getElementById('branchFilter').value = currentBranch;
+      }
+    }
+
+    function getFilteredData() {
+      const startMonth = document.getElementById('startMonth').value;
+      const endMonth = document.getElementById('endMonth').value;
+      const region = document.getElementById('regionFilter').value;
+      const branch = document.getElementById('branchFilter').value;
+
+      return rawData.filter(row => {
+        const rowMonth = monthKey(row.REPORT_DATE);
+
+        if (startMonth && rowMonth < startMonth) return false;
+        if (endMonth && rowMonth > endMonth) return false;
+        if (region !== 'All' && row.REGION !== region) return false;
+        if (branch !== 'All' && row.BRANCH !== branch) return false;
+
+        return true;
+      });
+    }
+
+    function calcDelta(currentRows) {
+      const selectedMonths = Array.from(new Set(currentRows.map(r => monthKey(r.REPORT_DATE)))).sort();
+
+      if (selectedMonths.length < 2) {
+        return {
+          revenue: '-',
+          profit: '-',
+          txn: '-',
+          margin: '-',
+          cls: 'flat'
+        };
+      }
+
+      const lastMonth = selectedMonths[selectedMonths.length - 1];
+      const prevMonth = selectedMonths[selectedMonths.length - 2];
+
+      const lastRows = currentRows.filter(r => monthKey(r.REPORT_DATE) === lastMonth);
+      const prevRows = currentRows.filter(r => monthKey(r.REPORT_DATE) === prevMonth);
+
+      const deltaText = (cur, prev, suffix = '%') => {
+        if (!prev) return '-';
+        const pct = (cur - prev) / prev * 100;
+        const arrow = pct >= 0 ? '▲' : '▼';
+        return `${arrow} ${Math.abs(pct).toFixed(1)}${suffix}`;
+      };
+
+      const lastRev = sum(lastRows, 'REVENUE');
+      const prevRev = sum(prevRows, 'REVENUE');
+
+      const lastProfit = sum(lastRows, 'PROFIT');
+      const prevProfit = sum(prevRows, 'PROFIT');
+
+      const lastTxn = sum(lastRows, 'TRANSACTIONS');
+      const prevTxn = sum(prevRows, 'TRANSACTIONS');
+
+      const lastMargin = lastRev ? lastProfit / lastRev * 100 : 0;
+      const prevMargin = prevRev ? prevProfit / prevRev * 100 : 0;
+      const marginDiff = lastMargin - prevMargin;
+
+      return {
+        revenue: deltaText(lastRev, prevRev),
+        profit: deltaText(lastProfit, prevProfit),
+        txn: deltaText(lastTxn, prevTxn),
+        margin: `${marginDiff >= 0 ? '▲' : '▼'} ${Math.abs(marginDiff).toFixed(1)} pp`,
+        cls: 'up'
+      };
+    }
+
+    function setDelta(elId, text) {
+      const el = document.getElementById(elId);
+      el.textContent = text;
+
+      el.classList.remove('up', 'down', 'flat');
+
+      if (text.startsWith('▲')) el.classList.add('up');
+      else if (text.startsWith('▼')) el.classList.add('down');
+      else el.classList.add('flat');
+    }
+
+    function renderBars(containerId, rows, labelField, valueField, colorClass = '') {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+
+      const maxVal = rows.length ? Math.max(...rows.map(r => num(r[valueField]))) : 0;
+
+      if (!rows.length) {
+        container.innerHTML = '<div class="card-subtitle">No data selected</div>';
+        return;
+      }
+
+      rows.forEach(row => {
+        const width = maxVal ? num(row[valueField]) / maxVal * 100 : 0;
+
+        const div = document.createElement('div');
+        div.className = 'bar-row';
+        div.innerHTML = `
+          <div>${row.key}</div>
+          <div class="bar-bg">
+            <div class="bar-fill ${colorClass}" style="width:${width.toFixed(1)}%"></div>
+          </div>
+          <div>${formatMoneyB(row[valueField])}</div>
+        `;
+
+        container.appendChild(div);
+      });
+    }
+
+    function updateChart(chart, labels, datasets) {
+      chart.data.labels = labels;
+      chart.data.datasets = datasets;
+      chart.update();
+    }
+
+    function createCharts() {
+      revenueChart = new Chart(document.getElementById('revenueTrendChart'), {
+        type: 'line',
+        data: { labels: [], datasets: [] },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, grid: { color: '#EEF2F7' } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+
+      profitChart = new Chart(document.getElementById('profitTrendChart'), {
+        type: 'line',
+        data: { labels: [], datasets: [] },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, grid: { color: '#EEF2F7' } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+
+      productChart = new Chart(document.getElementById('productDonutChart'), {
+        type: 'doughnut',
+        data: { labels: [], datasets: [] },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '62%',
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: { boxWidth: 10, boxHeight: 10, font: { size: 11 } }
+            }
+          }
+        }
+      });
+
+      revenueCostChart = new Chart(document.getElementById('revenueCostChart'), {
+        type: 'bar',
+        data: { labels: [], datasets: [] },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: { boxWidth: 10, boxHeight: 10, font: { size: 11 } }
+            }
+          },
+          scales: {
+            y: { beginAtZero: true, grid: { color: '#EEF2F7' } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+    }
+
+    function updateDataQuality(rows) {
+      const completeness = rows.length ? 100 : 0;
+      const uniqueRows = new Set(rows.map(r => JSON.stringify(r))).size;
+      const consistency = rows.length ? uniqueRows / rows.length * 100 : 100;
+
+      const validRows = rows.filter(r => {
+        const revenue = num(r.REVENUE);
+        const cost = num(r.COST);
+        const profit = num(r.PROFIT);
+        return revenue >= 0 && cost >= 0 && Math.abs((revenue - cost) - profit) < 1;
+      });
+
+      const validity = rows.length ? validRows.length / rows.length * 100 : 100;
+
+      document.getElementById('dqCompleteness').textContent = formatPct(completeness);
+      document.getElementById('dqCompletenessNote').textContent = completeness >= 95 ? 'Good' : 'Review';
+
+      document.getElementById('dqConsistency').textContent = formatPct(consistency);
+      document.getElementById('dqConsistencyNote').textContent = consistency >= 95 ? 'Good' : 'Review';
+
+      document.getElementById('dqValidity').textContent = formatPct(validity);
+      document.getElementById('dqValidityNote').textContent = validity >= 95 ? 'Good' : 'Review';
+
+      document.getElementById('dqFinalMessage').textContent =
+        Math.min(completeness, consistency, validity) >= 95
+          ? 'No critical data quality issues detected. Data is reliable for reporting and decision making.'
+          : 'Some data quality issues were detected. Please review missing values, duplicate rows or invalid financial figures.';
+    }
+
+    function updateInsights(rows, totalRevenue, totalProfit, profitMargin) {
+      const region = groupSum(rows, 'REGION', ['REVENUE']).sort((a, b) => b.REVENUE - a.REVENUE);
+      const branch = groupSum(rows, 'BRANCH', ['REVENUE']).sort((a, b) => b.REVENUE - a.REVENUE);
+      const product = groupSum(rows, 'PRODUCT', ['REVENUE']).sort((a, b) => b.REVENUE - a.REVENUE);
+
+      const topRegion = region[0] || { key: 'N/A', REVENUE: 0 };
+      const topBranch = branch[0] || { key: 'N/A', REVENUE: 0 };
+      const topProduct = product[0] || { key: 'N/A', REVENUE: 0 };
+
+      const productShare = totalRevenue ? topProduct.REVENUE / totalRevenue * 100 : 0;
+
+      document.getElementById('insight1').innerHTML =
+        `<b>${topRegion.key}</b> là khu vực đóng góp doanh thu cao nhất, đạt <b>${formatMoneyB(topRegion.REVENUE)}</b>.`;
+
+      document.getElementById('insight2').innerHTML =
+        `Sản phẩm <b>${topProduct.key}</b> là nguồn doanh thu chính, chiếm khoảng <b>${formatPct(productShare)}</b> tổng doanh thu.`;
+
+      document.getElementById('insight3').innerHTML =
+        `Chi nhánh <b>${topBranch.key}</b> đang dẫn đầu doanh thu với <b>${formatMoneyB(topBranch.REVENUE)}</b>.`;
+
+      document.getElementById('insight4').textContent =
+        'Cần theo dõi các chi nhánh có doanh thu thấp hoặc chi phí tăng nhanh để kiểm soát biên lợi nhuận.';
+
+      document.getElementById('executiveSummary').innerHTML =
+        `Tổng doanh thu đạt <b>${formatMoneyB(totalRevenue)}</b>, tổng lợi nhuận đạt <b>${formatMoneyB(totalProfit)}</b>, ` +
+        `với biên lợi nhuận ở mức <b>${formatPct(profitMargin)}</b>. ` +
+        `Khu vực <b>${topRegion.key}</b> hiện đang dẫn đầu về đóng góp doanh thu, ` +
+        `trong khi sản phẩm <b>${topProduct.key}</b> là nhóm sản phẩm trọng yếu.`;
+
+      document.getElementById('recommendation').innerHTML =
+        `Tập trung khai thác thêm sản phẩm <b>${topProduct.key}</b>, đồng thời rà soát chi phí tại các khu vực/chi nhánh có hiệu quả thấp để cải thiện profit margin.`;
+    }
+
+    function updateDashboard() {
+      updateBranchOptionsByRegion();
+
+      const rows = getFilteredData();
+
+      document.getElementById('rowsSelected').textContent = formatNumber(rows.length);
+
+      if (!rows.length) {
+        document.getElementById('dataAsOf').textContent = '-';
+        document.getElementById('totalRevenue').textContent = '0.00B';
+        document.getElementById('totalProfit').textContent = '0.00B';
+        document.getElementById('totalTransactions').textContent = '0';
+        document.getElementById('profitMargin').textContent = '0.0%';
+        renderBars('regionBars', [], 'key', 'REVENUE');
+        renderBars('branchBars', [], 'key', 'REVENUE');
+        return;
+      }
+
+      const totalRevenue = sum(rows, 'REVENUE');
+      const totalProfit = sum(rows, 'PROFIT');
+      const totalTransactions = sum(rows, 'TRANSACTIONS');
+      const profitMargin = totalRevenue ? totalProfit / totalRevenue * 100 : 0;
+
+      const maxDate = rows
+        .map(r => parseDate(r.REPORT_DATE))
+        .sort((a, b) => b - a)[0];
+
+      document.getElementById('dataAsOf').textContent =
+        maxDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+      document.getElementById('totalRevenue').textContent = formatMoneyB(totalRevenue);
+      document.getElementById('totalProfit').textContent = formatMoneyB(totalProfit);
+      document.getElementById('totalTransactions').textContent = formatNumber(totalTransactions);
+      document.getElementById('profitMargin').textContent = formatPct(profitMargin);
+
+      const delta = calcDelta(rows);
+      setDelta('revenueDelta', delta.revenue);
+      setDelta('profitDelta', delta.profit);
+      setDelta('txnDelta', delta.txn);
+      setDelta('marginDelta', delta.margin);
+
+      const monthly = groupMonthly(rows);
+      const monthLabels = monthly.map(r => monthLabel(r.month));
+
+      updateChart(revenueChart, monthLabels, [{
+        label: 'Revenue',
+        data: monthly.map(r => toBillion(r.REVENUE)),
+        borderColor: '#155EEF',
+        backgroundColor: 'rgba(21, 94, 239, 0.12)',
+        fill: true,
+        tension: 0.35,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 3
+      }]);
+
+      updateChart(profitChart, monthLabels, [{
+        label: 'Profit',
+        data: monthly.map(r => toBillion(r.PROFIT)),
+        borderColor: '#7A5AF8',
+        backgroundColor: 'rgba(122, 90, 248, 0.12)',
+        fill: true,
+        tension: 0.35,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 3
+      }]);
+
+      const product = groupSum(rows, 'PRODUCT', ['REVENUE']).sort((a, b) => b.REVENUE - a.REVENUE);
+
+      updateChart(productChart, product.map(r => r.key), [{
+        data: product.map(r => toBillion(r.REVENUE)),
+        backgroundColor: ['#155EEF', '#12B76A', '#7A5AF8', '#F79009', '#98A2B3', '#2E90FA'],
+        borderWidth: 0
+      }]);
+
+      updateChart(revenueCostChart, monthLabels, [
+        {
+          label: 'Revenue',
+          data: monthly.map(r => toBillion(r.REVENUE)),
+          backgroundColor: '#155EEF',
+          borderRadius: 5
+        },
+        {
+          label: 'Cost',
+          data: monthly.map(r => toBillion(r.COST)),
+          backgroundColor: '#F79009',
+          borderRadius: 5
+        }
+      ]);
+
+      const region = groupSum(rows, 'REGION', ['REVENUE']).sort((a, b) => b.REVENUE - a.REVENUE);
+      const branch = groupSum(rows, 'BRANCH', ['REVENUE']).sort((a, b) => b.REVENUE - a.REVENUE).slice(0, 10);
+
+      renderBars('regionBars', region, 'key', 'REVENUE');
+      renderBars('branchBars', branch, 'key', 'REVENUE', 'green');
+
+      updateInsights(rows, totalRevenue, totalProfit, profitMargin);
+      updateDataQuality(rows);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initFilters();
+      createCharts();
+      updateDashboard();
+
+      document.getElementById('applyFilter').addEventListener('click', updateDashboard);
+      document.getElementById('resetFilter').addEventListener('click', () => {
+        initFilters();
+        updateDashboard();
+      });
+
+      document.getElementById('regionFilter').addEventListener('change', updateDashboard);
+      document.getElementById('branchFilter').addEventListener('change', updateDashboard);
+      document.getElementById('startMonth').addEventListener('change', updateDashboard);
+      document.getElementById('endMonth').addEventListener('change', updateDashboard);
+    });
+  </script>
+</body>
+</html>

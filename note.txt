@@ -1,0 +1,7 @@
+git status
+
+git add .
+
+git commit -m "Update website5"
+
+git push origin main

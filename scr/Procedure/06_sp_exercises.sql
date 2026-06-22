@@ -1,0 +1,277 @@
+-- ============================================================
+-- BAI TAP STORED PROCEDURE - SQL SERVER
+-- Dataset: FuncPractice (chay 00_dataset.sql truoc)
+-- Muc do: Easy -> Medium -> Hard -> Very Hard -> Extreme
+-- Moi cap do 1 bai, yeu cau cao ve chat luong
+-- ============================================================
+
+USE FuncPractice;
+GO
+
+-- ============================================================
+-- CAP DO 1: EASY
+-- ============================================================
+-- Bai SP01 - Tra cuu thong tin khach hang
+-- ============================================================
+--
+-- Viet stored procedure usp_GetCustomerSummary nhan vao @cust_id INT.
+-- Procedure tra ve 2 result set:
+--
+--   [Result set 1] Thong tin khach hang:
+--     cust_id | full_name | tuoi | segment | city | ngay_thanh_vien (so nam ke tu open_date)
+--
+--   [Result set 2] Danh sach hop dong hien co:
+--     contract_id | san_pham | category | principal | outstanding
+--     | interest_rate | dpd | status | han_con_lai (so ngay)
+--
+-- Yeu cau:
+--   - Neu @cust_id khong ton tai: RAISERROR voi message ro rang, severity 16.
+--   - tuoi va ngay_thanh_vien tinh chinh xac (xu ly chua qua sinh nhat).
+--   - han_con_lai = 0 neu da qua han.
+--   - Parameters: @cust_id INT (bat buoc).
+--
+-- Test cases:
+--   EXEC usp_GetCustomerSummary @cust_id = 1;   -- co du lieu
+--   EXEC usp_GetCustomerSummary @cust_id = 3;   -- PREMIUM, nhieu hop dong
+--   EXEC usp_GetCustomerSummary @cust_id = 999; -- khong ton tai -> error
+-- -------------------------------------------------------
+-- Viet procedure cua ban o day:
+
+
+
+
+GO
+-- ============================================================
+-- CAP DO 2: MEDIUM
+-- ============================================================
+-- Bai SP02 - Tim kiem & loc hop dong linh hoat
+-- ============================================================
+--
+-- Viet stored procedure usp_SearchContracts voi cac tham so:
+--   @segment      VARCHAR(10)  = NULL   -- loc theo segment KH
+--   @category     VARCHAR(20)  = NULL   -- loc theo loai san pham
+--   @status       VARCHAR(10)  = NULL   -- loc theo trang thai HĐ
+--   @dpd_min      INT          = 0      -- DPD tu
+--   @dpd_max      INT          = 99999  -- DPD den
+--   @sort_by      VARCHAR(20)  = 'outstanding'  -- 'outstanding' | 'dpd' | 'principal'
+--   @sort_dir     VARCHAR(4)   = 'DESC'          -- 'ASC' | 'DESC'
+--   @page         INT          = 1      -- trang hien tai (bat dau tu 1)
+--   @page_size    INT          = 10     -- so dong moi trang
+--
+-- Procedure tra ve 2 result set:
+--
+--   [Result set 1] Metadata:
+--     total_rows | total_pages | current_page | page_size
+--
+--   [Result set 2] Ket qua trang hien tai:
+--     contract_id | cust_id | full_name | segment | prod_name | category
+--     | principal | outstanding | interest_rate | dpd | status
+--     | row_num (so thu tu trong toan bo ket qua, khong phai trong trang)
+--
+-- Yeu cau:
+--   - Tat ca tham so deu optional (NULL = khong loc).
+--   - @sort_by chi chap nhan 3 gia tri tren, neu khong hop le -> mac dinh 'outstanding'.
+--   - @sort_dir chi chap nhan 'ASC'/'DESC', neu sai -> mac dinh 'DESC'.
+--   - Phan trang dung OFFSET/FETCH (khong dung ROW_NUMBER + subquery).
+--   - @page < 1 -> tu dong chuyen ve 1; @page_size < 1 -> tu dong chuyen ve 10.
+--   - Xay dung dong SQL de xu ly @sort_by/@sort_dir dong (sp_executesql).
+--
+-- Test cases:
+--   EXEC usp_SearchContracts;                                         -- lay tat ca, trang 1
+--   EXEC usp_SearchContracts @segment='PREMIUM', @sort_by='dpd';     -- loc PREMIUM
+--   EXEC usp_SearchContracts @status='NPL', @sort_by='outstanding', @sort_dir='DESC';
+--   EXEC usp_SearchContracts @page=2, @page_size=5;                  -- phan trang
+--   EXEC usp_SearchContracts @sort_by='INVALID', @sort_dir='XYZ';    -- fallback mac dinh
+-- -------------------------------------------------------
+
+
+
+
+GO
+-- ============================================================
+-- CAP DO 3: HARD
+-- ============================================================
+-- Bai SP03 - Xu ly thanh toan & cap nhat trang thai
+-- ============================================================
+--
+-- Viet stored procedure usp_ProcessPayment xu ly mot giao dich tra no:
+--   @contract_id  INT
+--   @amount       BIGINT           -- so tien thanh toan
+--   @channel      VARCHAR(20)      -- ONLINE | TELLER | ATM | AUTO
+--   @txn_date     DATETIME = NULL  -- NULL = GETDATE()
+--   @note         NVARCHAR(200) = NULL
+--   @new_txn_id   INT OUTPUT       -- tra ve txn_id vua tao
+--
+-- Logic xu ly (theo thu tu):
+--
+--   1. Validate input:
+--      - contract_id ton tai va dang ACTIVE -> neu khong: THROW loi.
+--      - amount > 0 -> neu khong: THROW loi.
+--      - channel hop le (trong 4 gia tri) -> neu khong: THROW loi.
+--
+--   2. INSERT vao Transactions (txn_id = MAX(txn_id) + 1).
+--
+--   3. Cap nhat Contracts:
+--      - outstanding = MAX(0, outstanding - @amount).
+--      - Neu outstanding moi = 0 -> status = 'CLOSED'.
+--      - Neu @amount >= so tien den han (outstanding * interest_rate/100/12 * 1.1)
+--        thi dpd = 0 (coi nhu da thanh toan du), nguoc lai giu nguyen dpd.
+--
+--   4. Neu outstanding sau thanh toan <= 0:
+--      - Them 1 dong Transactions loai 'WAIVER' voi amount = phan du (neu amount > outstanding cu)
+--        de ghi nhan hoan tien du (amount = @amount - outstanding_cu, note = 'Hoan tien du').
+--
+--   5. OUTPUT @new_txn_id = txn_id vua INSERT.
+--
+--   6. Toan bo trong 1 TRANSACTION, ROLLBACK neu bat ky buoc nao loi.
+--      Tra ve 1 result set tom tat: contract_id | outstanding_truoc | outstanding_sau
+--        | so_tien_thuc_tra | hoan_du | trang_thai_moi.
+--
+-- Test cases:
+--   -- Thanh toan binh thuong
+--   DECLARE @id INT;
+--   EXEC usp_ProcessPayment 1001, 25000000, 'ONLINE', NULL, N'Test payment', @id OUTPUT;
+--   SELECT @id AS new_txn_id;
+--
+--   -- Thanh toan tat toan
+--   EXEC usp_ProcessPayment 1010, 999999999, 'TELLER', NULL, N'Tat toan', @id OUTPUT;
+--
+--   -- Loi: contract khong ACTIVE
+--   EXEC usp_ProcessPayment 1006, 1000000, 'ONLINE', NULL, NULL, @id OUTPUT;
+--
+--   -- Loi: amount am
+--   EXEC usp_ProcessPayment 1001, -500000, 'ONLINE', NULL, NULL, @id OUTPUT;
+-- -------------------------------------------------------
+
+
+
+
+GO
+-- ============================================================
+-- CAP DO 4: VERY HARD
+-- ============================================================
+-- Bai SP04 - Danh gia rui ro danh muc & sinh bao cao
+-- ============================================================
+--
+-- Viet stored procedure usp_PortfolioRiskReport voi tham so:
+--   @as_of_date   DATE = NULL   -- ngay bao cao (NULL = hom nay)
+--   @segment      VARCHAR(10) = NULL
+--   @output_mode  TINYINT = 1
+--       1 = Summary (tong hop theo segment + dpd_band)
+--       2 = Detail  (tung hop dong, day du chi tieu)
+--       3 = Both    (ca hai result set)
+--
+-- Result set SUMMARY (neu output_mode IN (1,3)):
+--   segment | dpd_band | so_hd | tong_principal | tong_outstanding
+--   | ty_le_outstanding_pct   <- outstanding / tong outstanding toan danh muc
+--   | provision               <- NORMAL:0% WATCH:2% SUB:20% NPL:50%
+--   | avg_score               <- diem tb thang gan nhat <= @as_of_date (LEFT JOIN Scores)
+--   | pct_of_portfolio        <- so_hd / tong so HD ACTIVE
+--
+-- Result set DETAIL (neu output_mode IN (2,3)):
+--   contract_id | cust_id | full_name | segment | prod_name | category
+--   | principal | outstanding | interest_rate | dpd | dpd_band | status
+--   | health_score  <- dpd_point * LOG(1 + outstanding/1e6), tu Bai H03
+--   | score_value   <- score thang gan nhat
+--   | score_band
+--   | thang_score   <- thang cua score lay duoc
+--   | provision_amount
+--   | risk_rank     <- RANK() theo health_score ASC (thap = nguy hiem hon)
+--
+-- Yeu cau:
+--   - VALIDATE @output_mode: chi chap nhan 1/2/3, neu sai -> THROW.
+--   - Tinh tong outstanding toan danh muc 1 lan (CTE hoac bien), tai su dung.
+--   - Score lay theo thang moi nhat <= @as_of_date (dung CROSS APPLY TOP 1).
+--   - Neu @segment khoc NULL, loc ca 2 result set theo segment do.
+--   - Provision la BIGINT (lam tron).
+--
+-- Test cases:
+--   EXEC usp_PortfolioRiskReport;                                         -- mac dinh
+--   EXEC usp_PortfolioRiskReport @output_mode = 1;                        -- chi summary
+--   EXEC usp_PortfolioRiskReport @output_mode = 2, @segment = 'PREMIUM';  -- detail PREMIUM
+--   EXEC usp_PortfolioRiskReport @output_mode = 3, @as_of_date = '2024-01-31';
+--   EXEC usp_PortfolioRiskReport @output_mode = 9;                        -- -> error
+-- -------------------------------------------------------
+
+
+
+
+GO
+-- ============================================================
+-- CAP DO 5: EXTREME
+-- ============================================================
+-- Bai SP05 - Engine tinh lai & schedule ky tra no
+-- ============================================================
+--
+-- Viet stored procedure usp_GenerateRepaymentSchedule:
+--   @contract_id   INT
+--   @recalc_from   DATE = NULL
+--       NULL = tinh lai tu dau (full schedule).
+--       Co gia tri = tinh lai tu ky chua tra (dua vao Transactions hien co).
+--   @save_to_table BIT = 0
+--       0 = chi SELECT ket qua, khong luu.
+--       1 = luu vao bang RepaymentSchedule (tu tao neu chua co).
+--   @debug         BIT = 0  -- in them thong tin trung gian neu = 1
+--
+-- Thuat toan (Equal Installment / EMI):
+--   r   = interest_rate / 100 / 12
+--   n   = term_months
+--   P   = principal
+--   EMI = P * r * (1+r)^n / ((1+r)^n - 1)
+--
+--   Moi ky:
+--     lai_ky       = outstanding_dau_ky * r
+--     goc_ky       = EMI - lai_ky
+--     outstanding_cuoi_ky = outstanding_dau_ky - goc_ky
+--   Ky cuoi: goc_ky = outstanding_dau_ky (tranh float drift).
+--
+-- Khi @recalc_from IS NOT NULL:
+--   - Lay tong so tien da thuc tra (PAYMENT) truoc @recalc_from tu Transactions.
+--   - Tim ky bat dau = ky dau tien co ngay_den_han >= @recalc_from.
+--   - Tinh lai outstanding_dau_ky cua ky bat dau = principal - tong_da_tra.
+--   - Tinh lai EMI moi voi P_moi va so ky con lai (giu nguyen interest_rate).
+--   - Cac ky truoc @recalc_from giu nguyen (lay tu bang hoac tinh lai dau).
+--
+-- Khi @save_to_table = 1:
+--   - Tu tao bang RepaymentSchedule neu chua co:
+--       contract_id INT, ky_so INT, ngay_den_han DATE,
+--       outstanding_dau_ky BIGINT, lai_ky BIGINT, goc_ky BIGINT,
+--       tra_tong BIGINT, outstanding_cuoi_ky BIGINT,
+--       trang_thai VARCHAR(10),  -- 'PENDING' / 'PAID' / 'PARTIAL' / 'OVERDUE'
+--       created_at DATETIME DEFAULT GETDATE()
+--   - Xoa cac dong cu cua @contract_id roi INSERT moi.
+--   - trang_thai:
+--       PAID    = co Transactions PAYMENT tong >= tra_tong trong ky (ngay_den_han - 1 thang, ngay_den_han].
+--       PARTIAL = co Transactions PAYMENT nhung chua du.
+--       OVERDUE = PENDING va ngay_den_han < GETDATE().
+--       PENDING = chua den han.
+--
+-- Output (luon tra ve, du @save_to_table = 1):
+--   [Result set 1 - chi khi @debug = 1]:
+--     contract_id | P | r | n | EMI | recalc_from | tong_da_tra | ky_bat_dau
+--
+--   [Result set 2 - schedule]:
+--     ky_so | ngay_den_han | outstanding_dau_ky | lai_ky | goc_ky
+--     | tra_tong | outstanding_cuoi_ky | trang_thai
+--
+-- Yeu cau:
+--   - Dung Recursive CTE cho schedule (OPTION MAXRECURSION 360).
+--   - Toan bo @save_to_table = 1 trong TRANSACTION.
+--   - THROW ro rang neu contract_id khong ton tai.
+--   - Float precision: ROUND(..., 0) -> CAST AS BIGINT.
+--
+-- Test cases:
+--   -- Full schedule, chi SELECT
+--   EXEC usp_GenerateRepaymentSchedule @contract_id = 1001;
+--
+--   -- Full schedule, luu vao bang
+--   EXEC usp_GenerateRepaymentSchedule @contract_id = 1001, @save_to_table = 1;
+--   SELECT * FROM RepaymentSchedule WHERE contract_id = 1001;
+--
+--   -- Tinh lai tu ky hien tai (da tra 4 ky)
+--   EXEC usp_GenerateRepaymentSchedule @contract_id = 1001,
+--        @recalc_from = '2024-04-01', @save_to_table = 1, @debug = 1;
+--
+--   -- Contract khong ton tai
+--   EXEC usp_GenerateRepaymentSchedule @contract_id = 9999;
+-- -------------------------------------------------------
